@@ -8,6 +8,31 @@
 
 #import "Chronometer.h"
 
+@interface Chronometer () {
+    
+    CADisplayLink *_displayLink;
+    
+}
+
+- (void)update;
+
+@end
+
 @implementation Chronometer
+
+- (id)init {
+    
+    if (self = [super init]) {
+        
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
+        
+    }
+    
+    return self;
+}
+
+- (void)update {
+    
+};
 
 @end
