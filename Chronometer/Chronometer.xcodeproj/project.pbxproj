@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		342E842B18AF0EE6001F7D5F /* Tumbler.m in Sources */ = {isa = PBXBuildFile; fileRef = 342E842A18AF0EE6001F7D5F /* Tumbler.m */; };
+		342E842E18AF0F15001F7D5F /* Chronometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 342E842D18AF0F15001F7D5F /* Chronometer.m */; };
 		ED37AA3A18AF0CF500A5EC3C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3918AF0CF500A5EC3C /* Foundation.framework */; };
 		ED37AA3C18AF0CF600A5EC3C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3B18AF0CF600A5EC3C /* CoreGraphics.framework */; };
 		ED37AA3E18AF0CF600A5EC3C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3D18AF0CF600A5EC3C /* UIKit.framework */; };
@@ -34,6 +36,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		342E842918AF0EE6001F7D5F /* Tumbler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tumbler.h; sourceTree = "<group>"; };
+		342E842A18AF0EE6001F7D5F /* Tumbler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tumbler.m; sourceTree = "<group>"; };
+		342E842C18AF0F15001F7D5F /* Chronometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chronometer.h; sourceTree = "<group>"; };
+		342E842D18AF0F15001F7D5F /* Chronometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chronometer.m; sourceTree = "<group>"; };
 		ED37AA3618AF0CF500A5EC3C /* Chronometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chronometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED37AA3918AF0CF500A5EC3C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		ED37AA3B18AF0CF600A5EC3C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -117,6 +123,10 @@
 				ED37AA4B18AF0CF600A5EC3C /* Main.storyboard */,
 				ED37AA4E18AF0CF600A5EC3C /* ViewController.h */,
 				ED37AA4F18AF0CF600A5EC3C /* ViewController.m */,
+				342E842918AF0EE6001F7D5F /* Tumbler.h */,
+				342E842A18AF0EE6001F7D5F /* Tumbler.m */,
+				342E842C18AF0F15001F7D5F /* Chronometer.h */,
+				342E842D18AF0F15001F7D5F /* Chronometer.m */,
 				ED37AA5118AF0CF600A5EC3C /* Images.xcassets */,
 				ED37AA4018AF0CF600A5EC3C /* Supporting Files */,
 			);
@@ -250,7 +260,9 @@
 			files = (
 				ED37AA5018AF0CF600A5EC3C /* ViewController.m in Sources */,
 				ED37AA4A18AF0CF600A5EC3C /* AppDelegate.m in Sources */,
+				342E842E18AF0F15001F7D5F /* Chronometer.m in Sources */,
 				ED37AA4618AF0CF600A5EC3C /* main.m in Sources */,
+				342E842B18AF0EE6001F7D5F /* Tumbler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +471,7 @@
 				ED37AA6A18AF0CF600A5EC3C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		ED37AA6B18AF0CF600A5EC3C /* Build configuration list for PBXNativeTarget "ChronometerTests" */ = {
 			isa = XCConfigurationList;
@@ -467,6 +480,7 @@
 				ED37AA6D18AF0CF600A5EC3C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
