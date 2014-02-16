@@ -10,4 +10,6 @@
 
 @interface ViewController : UIViewController
 
+- (void)updateCounter:(NSString *)timeInterval;
+
 @end

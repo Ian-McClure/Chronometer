@@ -7,6 +7,7 @@
 //
 
 #import "Chronometer.h"
+#import "ViewController.h"
 
 //A flag to tell Chronometer it is running, stopped or paused; Default is kStopped;
 typedef enum {
@@ -22,6 +23,7 @@ typedef enum{
     kInterval
 } ChronoMode;
 
+//Private variables and methods are initialized? here.
 @interface Chronometer () {
     
     CADisplayLink *_displayLink;
@@ -32,6 +34,12 @@ typedef enum{
     NSDate  *_date,
             *_startDate,
             *_stopDate;
+    
+    //Creates a string from an NSDate or NSTimeInterval and vice versa.
+    NSDateFormatter *_dateFormatter;
+    
+    //I need a reference to the ViewController so I can send it messages.
+    ViewController *_viewController;
 }
 
 - (void)update;
@@ -42,14 +50,17 @@ typedef enum{
 
 #pragma mark - Initializers
 
-- (id)init {
+- (id)initWithViewController:(ViewController *)controller {
     
     if (self = [super init]) {
         
         _mode = kStopwatch;
         _state = kStopped;
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
+        _viewController = controller;
         
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        [_dateFormatter setDateFormat:@"hh:mm:SS.ss"];
     }
     
     return self;
@@ -95,13 +106,11 @@ typedef enum{
 
 #pragma mark - Update
 
+//This should do all the number calculations and formatting, then tell the view controller to update the timer view.
 - (void)update {
     
-    //Not sure how we are going to update things on the screen.
-    //We can add a reference to the ViewController and make the ViewController's UILabel a property so
-    //we can access it or add methods to the ViewController to have this function update via that method.
+    //NSTimeInterval _elapsedTime = [_startDate timeIntervalSinceNow];
     
-    //Better yet, I think we can have the DisplayLink call update: in the ViewController and have it ask this object for the info.    
 }
 
 @end
