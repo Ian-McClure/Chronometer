@@ -9,27 +9,10 @@
 #import "Chronometer.h"
 #import "ViewController.h"
 
-//A flag to tell Chronometer it is running, stopped or paused; Default is kStopped;
-typedef enum {
-    kStopped,
-    kPaused,
-    kRunning
-} ChronoState;
-
-//A flag to tell Chronometer it is running as a timer, stopwatch, or Interval Timer; Default is kStopwatch;
-typedef enum{
-    kStopwatch,
-    kTimer,
-    kInterval
-} ChronoMode;
-
 //Private variables and methods are initialized? here.
 @interface Chronometer () {
     
     CADisplayLink *_displayLink;
-    
-    ChronoState _state;
-    ChronoMode _mode;
     
     NSDate  *_date,
             *_startDate,
@@ -84,8 +67,14 @@ typedef enum{
 
 - (void)reset {
     
+    [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
     _mode = kStopwatch;
     _state = kStopped;
+    
+    _startDate = [NSDate date];
+    [self update];
+    
 }
 
 - (void)start {
@@ -101,6 +90,7 @@ typedef enum{
     
     //A method that caused update: to be called everytime the screen refreshes;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    _state = kRunning;
     
 }
 
@@ -109,8 +99,10 @@ typedef enum{
 //This should do all the number calculations and formatting, then tell the view controller to update the timer view.
 - (void)update {
     
-    //NSTimeInterval _elapsedTime = [_startDate timeIntervalSinceNow];
+    NSTimeInterval _elapsedTime = [_startDate timeIntervalSinceNow];
+    NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];
     
+    [_viewController updateCounter:_formattedString];
 }
 
 @end

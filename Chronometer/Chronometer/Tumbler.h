@@ -2,7 +2,7 @@
 //  Tumbler.h
 //  Chronometer
 //
-//  Created by Matthew Breton on 2/14/14.
+//  Created by Matthew Breton & Ian McClure on 2/14/14.
 //
 //
 

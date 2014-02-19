@@ -2,7 +2,7 @@
 //  AppDelegate.m
 //  Chronometer
 //
-//  Created by Ian McClure on 2/14/14.
+//  Created by Matthew Breton & Ian McClure on 2/14/14.
 //
 //
 
