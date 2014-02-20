@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Tumbler.h"
 
 @class Chronometer;
 
@@ -14,5 +15,7 @@
 
 - (void)updateCounter:(NSString *)timeInterval;
 - (void)updateButtons;
+- (void)updateNextPlace:(Place)p;
+- (void)updatePreviousPlace:(Place)p;
 
 @end

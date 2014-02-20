@@ -21,6 +21,8 @@
     
     UILabel *_ChronometerLabel;
     
+    NSMutableArray *_tumblers;
+    
 }
 @end
 
@@ -29,6 +31,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
+    
+    for (int i = 0; i <= 5; i++) {
+        //CGRectZero needs to be replaced!!!!!!
+        Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
+        [_tumblers addObject:t];
+    }
     
     _screenSize = [UIScreen mainScreen].bounds.size;
     
@@ -97,6 +107,20 @@
 //Called by _chronometer to update the text of the buttons to match the state of the Chronometer.
 - (void)updateButtons {
     
+}
+
+- (void)updateNextPlace:(Place)p{
+    if (p < 5) {
+        Tumbler *t = [_tumblers objectAtIndex:p+1];
+        [t increment];
+    }
+}
+
+- (void)updatePreviousPlace:(Place)p{
+    if (p > 0) {
+        Tumbler *t = [_tumblers objectAtIndex:p-1];
+        [t decrement];
+    }
 }
 
 - (void)didReceiveMemoryWarning
