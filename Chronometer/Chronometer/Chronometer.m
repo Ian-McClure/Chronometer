@@ -14,8 +14,7 @@
     
     CADisplayLink *_displayLink;
     
-    NSDate  *_date,
-            *_startDate,
+    NSDate  *_startDate,
             *_stopDate;
     
     //Creates a string from an NSDate or NSTimeInterval and vice versa.
@@ -43,7 +42,8 @@
         _viewController = controller;
         
         _dateFormatter = [[NSDateFormatter alloc] init];
-        [_dateFormatter setDateFormat:@"hh:mm:SS.ss"];
+        [_dateFormatter setDateFormat:@"HH:mm:ss.SS"];
+        [_dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
     }
     
     return self;
@@ -80,6 +80,7 @@
 - (void)start {
     
     _startDate = [NSDate date];
+    NSLog(@"_startDate is: %@", _startDate);
     
     //If the timer was paused, see how long it has been paused
     //then add that time to the _startDate to offset the time it was paused;
@@ -99,7 +100,14 @@
 //This should do all the number calculations and formatting, then tell the view controller to update the timer view.
 - (void)update {
     
-    NSTimeInterval _elapsedTime = [_startDate timeIntervalSinceNow];
+    NSTimeInterval _elapsedTime;
+    
+    if (_mode == kStopwatch) {
+        _elapsedTime = [[NSDate date] timeIntervalSinceDate:_startDate];
+    } else {
+        _elapsedTime = [_startDate timeIntervalSinceNow];
+    }
+    
     NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];
     
     [_viewController updateCounter:_formattedString];
