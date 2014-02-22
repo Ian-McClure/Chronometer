@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		342E842B18AF0EE6001F7D5F /* Tumbler.m in Sources */ = {isa = PBXBuildFile; fileRef = 342E842A18AF0EE6001F7D5F /* Tumbler.m */; };
 		342E842E18AF0F15001F7D5F /* Chronometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 342E842D18AF0F15001F7D5F /* Chronometer.m */; };
+		34841A7118B8447300D7A46F /* CustomKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 34841A7018B8447300D7A46F /* CustomKeyboard.m */; };
 		ED37AA3A18AF0CF500A5EC3C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3918AF0CF500A5EC3C /* Foundation.framework */; };
 		ED37AA3C18AF0CF600A5EC3C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3B18AF0CF600A5EC3C /* CoreGraphics.framework */; };
 		ED37AA3E18AF0CF600A5EC3C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3D18AF0CF600A5EC3C /* UIKit.framework */; };
@@ -231,6 +232,8 @@
 		342E842A18AF0EE6001F7D5F /* Tumbler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tumbler.m; sourceTree = "<group>"; };
 		342E842C18AF0F15001F7D5F /* Chronometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chronometer.h; sourceTree = "<group>"; };
 		342E842D18AF0F15001F7D5F /* Chronometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Chronometer.m; sourceTree = "<group>"; };
+		34841A6F18B8447300D7A46F /* CustomKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomKeyboard.h; sourceTree = "<group>"; };
+		34841A7018B8447300D7A46F /* CustomKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomKeyboard.m; sourceTree = "<group>"; };
 		ED37AA3618AF0CF500A5EC3C /* Chronometer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chronometer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED37AA3918AF0CF500A5EC3C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		ED37AA3B18AF0CF600A5EC3C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -506,6 +509,8 @@
 				ED37AA4B18AF0CF600A5EC3C /* Main.storyboard */,
 				ED37AA4E18AF0CF600A5EC3C /* ViewController.h */,
 				ED37AA4F18AF0CF600A5EC3C /* ViewController.m */,
+				34841A6F18B8447300D7A46F /* CustomKeyboard.h */,
+				34841A7018B8447300D7A46F /* CustomKeyboard.m */,
 				342E842918AF0EE6001F7D5F /* Tumbler.h */,
 				342E842A18AF0EE6001F7D5F /* Tumbler.m */,
 				342E842C18AF0F15001F7D5F /* Chronometer.h */,
@@ -1033,6 +1038,7 @@
 			files = (
 				ED37AA5018AF0CF600A5EC3C /* ViewController.m in Sources */,
 				ED37AA4A18AF0CF600A5EC3C /* AppDelegate.m in Sources */,
+				34841A7118B8447300D7A46F /* CustomKeyboard.m in Sources */,
 				342E842E18AF0F15001F7D5F /* Chronometer.m in Sources */,
 				ED37AA4618AF0CF600A5EC3C /* main.m in Sources */,
 				ED73BF7A18B6BB5100D25EDC /* ImageCache.m in Sources */,

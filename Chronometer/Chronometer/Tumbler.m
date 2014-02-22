@@ -9,6 +9,9 @@
 #import "Tumbler.h"
 #import "ViewController.h"
 
+#define kTop YES
+#define kBottom NO
+
 @interface Tumbler () {
     Digit _digit;
     Place _place;

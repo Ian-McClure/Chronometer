@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "Chronometer.h"
+#import "CustomKeyboard.h"
 
 @interface ViewController () {
 
@@ -15,11 +16,16 @@
     
     Chronometer *_chronometer;
     
+    CustomKeyboard *_keyboard;
+    
     //Use two button that change their function instead of 5 different buttons?
     UIButton *_leftButton,
              *_rightButton;
     
     UILabel *_ChronometerLabel;
+    
+    UIView *_timerView,
+           *_settingsView;
     
     NSMutableArray *_tumblers;
     
@@ -32,6 +38,16 @@
 {
     [super viewDidLoad];
     
+    _screenSize = [UIScreen mainScreen].bounds.size;
+    
+    _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+    [_timerView setBackgroundColor:[UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]];
+    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
+    
+    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216)];
+    [_keyboard setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
+    
     _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
     
     for (int i = 0; i <= 5; i++) {
@@ -39,8 +55,6 @@
         Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
         [_tumblers addObject:t];
     }
-    
-    _screenSize = [UIScreen mainScreen].bounds.size;
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
@@ -62,9 +76,12 @@
     [_rightButton setTitle:@"Reset" forState:UIControlStateNormal];
     
     //Objects won't draw unless they are added to the ViewController's view.
-    [self.view addSubview:_ChronometerLabel];
-    [self.view addSubview:_leftButton];
-    [self.view addSubview:_rightButton];
+    [self.view addSubview:_settingsView];
+    [self.view addSubview:_timerView];
+    [_timerView addSubview:_ChronometerLabel];
+    [_timerView addSubview:_leftButton];
+    [_timerView addSubview:_rightButton];
+    [_settingsView addSubview:_keyboard];
     
 }
 

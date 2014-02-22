@@ -20,6 +20,8 @@
     //Creates a string from an NSDate or NSTimeInterval and vice versa.
     NSDateFormatter *_dateFormatter;
     
+    NSMutableArray *_lapTimes;
+    
     //I need a reference to the ViewController so I can send it messages.
     ViewController *_viewController;
 }
@@ -44,6 +46,7 @@
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setDateFormat:@"HH:mm:ss.SS"];
         [_dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+        _lapTimes = [[NSMutableArray alloc] initWithCapacity:104];
     }
     
     return self;
