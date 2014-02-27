@@ -30,6 +30,11 @@
     NSMutableArray *_tumblers;
     
 }
+
+- (void)animateButtonTransition:(uint)direction;
+- (void)updateNextPlace:(Place)p;
+- (void)updatePreviousPlace:(Place)p;
+
 @end
 
 @implementation ViewController
@@ -67,13 +72,11 @@
     [_ChronometerLabel setTextColor:[UIColor blackColor]];
     [_ChronometerLabel setText:@"00:00:00.00"];
     
-    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75)];
+    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
     [_leftButton addTarget:self action:@selector(leftButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    [_leftButton setTitle:@"Start" forState:UIControlStateNormal];
     
-    _rightButton = [self createButtonAtLocation:CGPointMake(160, _screenSize.height * 0.75)];
+    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
     [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    [_rightButton setTitle:@"Reset" forState:UIControlStateNormal];
     
     //Objects won't draw unless they are added to the ViewController's view.
     [self.view addSubview:_settingsView];
@@ -108,22 +111,94 @@
 
 #pragma mark - Button Methods
 
-//This will likely be replaced or ammended when we make the buttons images instead of text.
-- (UIButton *)createButtonAtLocation:(CGPoint)location {
+//Tag 0 represents the left button. Tag 1 represents the right button
+- (UIButton *)createButtonAtLocation:(CGPoint)location withTag:(uint)tag {
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setFrame:CGRectMake(location.x, location.y-44, 160, 88)];
-    [button.titleLabel setFont:[UIFont fontWithName:@"Avenir-Black" size:36]];
-    [button.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [button setTag:tag];
     [button setBackgroundColor:[UIColor clearColor]];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+
+    if (tag == 0) {
+        [button setFrame:CGRectMake(location.x, location.y-44, 320, 88)];
+        [button setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+        [button setContentEdgeInsets:UIEdgeInsetsMake(22, 138, 22, 138)];
+
+    } else {
+        [button setFrame:CGRectMake(location.x, location.y-44, 160, 88)];
+        [button setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+        [button setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+        [button setContentEdgeInsets:UIEdgeInsetsMake(22, 58, 22, 58)];
+
+    }
     
     return button;
 }
 
-//Called by _chronometer to update the text of the buttons to match the state of the Chronometer.
+//Called by _chronometer to update the images of the buttons to match the state of the Chronometer.
 - (void)updateButtons {
-    
+    if (_chronometer.mode == kStopwatch) {
+        
+        if (_chronometer.state == kStopped) {
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x < 320) {
+                [self animateButtonTransition:1];
+            }
+            
+        } else if (_chronometer.state == kRunning) {
+            [_leftButton setImage:[UIImage imageNamed:@"newlapup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"newlapdown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x > 160) {
+                [self animateButtonTransition:0];
+            }
+        } else {
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+        }
+    } else if (_chronometer.mode == kTimer) {
+        
+        if (_chronometer.mode == kStopped) {
+            //Stuff
+        } else if (_chronometer.mode == kRunning) {
+            //Stuff
+        } else {
+            //Stuff
+        }
+    } else {
+        
+        if (_chronometer.mode == kStopped) {
+            //Stuff
+        } else if (_chronometer.mode == kRunning) {
+            //Stuff
+        } else {
+            //Stuff
+        }
+    }
+}
+
+//for direction 1 represent out and 0 represents in for the right button.
+- (void)animateButtonTransition:(uint)direction {
+    if (direction == 1) {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 320, _leftButton.frame.size.height),
+            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 138, 22, 138),
+            _rightButton.frame = CGRectMake(320, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
+        } completion:^(BOOL finished) {
+            [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+        }];
+    } else {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 160, _leftButton.frame.size.height),
+            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 58, 22, 58),
+            _rightButton.frame = CGRectMake(160, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
+        } completion:NO];
+    }
 }
 
 - (void)updateNextPlace:(Place)p{
