@@ -52,11 +52,21 @@
     return self;
 }
 
+//With the Chronometer actions, always call the ViewController's updateButtons: last.
 #pragma mark - Actions
+
+- (void)addLap {
+    
+    NSLog(@"A new lap time will have been added.");
+    
+    [_viewController updateButtons];
+}
 
 - (void)cancel {
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    [_viewController updateButtons];
 }
 
 - (void)pause {
@@ -66,6 +76,7 @@
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     
+    [_viewController updateButtons];
 }
 
 - (void)reset {
@@ -78,6 +89,7 @@
     _startDate = [NSDate date];
     [self update];
     
+    [_viewController updateButtons];
 }
 
 - (void)start {
@@ -96,6 +108,7 @@
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     _state = kRunning;
     
+    [_viewController updateButtons];
 }
 
 #pragma mark - Update

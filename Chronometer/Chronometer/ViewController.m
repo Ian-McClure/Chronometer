@@ -88,25 +88,18 @@
     
 }
 
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
 //not sure what to call this method.
 //Updates the Chronometer's view to show the correct timeInterval.
 - (void)updateCounter:(NSString *)timeInterval {
     
     [_ChronometerLabel setText:timeInterval];
     
-}
-
-//Handles what happens when the left button was tapped.
-- (void)leftButtonTapped {
-    NSLog(@"The left button was pressed.");
-    
-    [_chronometer start];
-}
-
-//Handles what happens when the right button was tapped.
-- (void)rightButtonTapped {
-    NSLog(@"The right button was pressed.");
-    [_chronometer reset];
 }
 
 #pragma mark - Button Methods
@@ -137,46 +130,59 @@
 
 //Called by _chronometer to update the images of the buttons to match the state of the Chronometer.
 - (void)updateButtons {
-    if (_chronometer.mode == kStopwatch) {
+    if (_chronometer.mode == kInterval) {
         
-        if (_chronometer.state == kStopped) {
+        if (_chronometer.mode == kRunning) {
+            //Stuff
+        } else if (_chronometer.mode == kPaused) {
+            //Stuff
+        } else { //kStopped
+                 //Stuff
+        }
+        
+    } else if (_chronometer.mode == kTimer) {
+        
+        if (_chronometer.mode == kRunning) {
+            [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
+            
+        } else if (_chronometer.mode == kPaused) {
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
             
-            if (_rightButton.frame.origin.x < 320) {
-                [self animateButtonTransition:1];
-            }
-            
-        } else if (_chronometer.state == kRunning) {
+        } else { //kStopped
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+        }
+    } else { //kStopwatch
+        
+        if (_chronometer.state == kRunning) {
             [_leftButton setImage:[UIImage imageNamed:@"newlapup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"newlapdown.png"] forState:UIControlStateHighlighted];
             
             if (_rightButton.frame.origin.x > 160) {
                 [self animateButtonTransition:0];
             }
-        } else {
+            
+        } else if (_chronometer.state == kPaused) {
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
             [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
             [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
-        }
-    } else if (_chronometer.mode == kTimer) {
-        
-        if (_chronometer.mode == kStopped) {
-            //Stuff
-        } else if (_chronometer.mode == kRunning) {
-            //Stuff
-        } else {
-            //Stuff
-        }
-    } else {
-        
-        if (_chronometer.mode == kStopped) {
-            //Stuff
-        } else if (_chronometer.mode == kRunning) {
-            //Stuff
-        } else {
-            //Stuff
+            
+        } else { //kStopped
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x < 320) {
+                [self animateButtonTransition:1];
+            }
         }
     }
 }
@@ -201,6 +207,69 @@
     }
 }
 
+//Handles what happens when the left button was tapped.
+- (void)leftButtonTapped {
+    NSLog(@"The left button was pressed.");
+    if (_chronometer.mode == kInterval) {
+        if (_chronometer.state == kRunning) {
+            [_chronometer pause];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer start];
+        } else { //kStopped
+            [_chronometer start];
+        }
+    } else if (_chronometer.mode == kTimer) {
+        if (_chronometer.state == kRunning) {
+            [_chronometer pause];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer start];
+        } else { //kStopped
+            [_chronometer start];
+        }
+    } else { //kStopwatch
+        if (_chronometer.state == kRunning) {
+            [_chronometer addLap];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer start];
+        } else { //kStopped
+            [_chronometer start];
+        }
+    }
+}
+
+//Handles what happens when the right button was tapped.
+- (void)rightButtonTapped {
+    NSLog(@"The right button was pressed.");
+    if (_chronometer.mode == kInterval) {
+        if (_chronometer.state == kRunning) {
+            [_chronometer cancel];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer cancel];
+        } else { //kStopped
+            [_chronometer reset];
+        }
+    } else if (_chronometer.mode == kTimer) {
+        if (_chronometer.state == kRunning) {
+            [_chronometer cancel];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer cancel];
+        } else { //kStopped
+            [_chronometer reset];
+        }
+    } else { //kStopwatch
+        if (_chronometer.state == kRunning) {
+            [_chronometer pause];
+        } else if (_chronometer.state == kPaused) {
+            [_chronometer reset];
+        } else { //kStopped
+            [_chronometer pause];
+        }
+    }
+}
+
+
+#pragma mark - Tumbler Delegate Methods
+
 - (void)updateNextPlace:(Place)p{
     if (p < 5) {
         Tumbler *t = [_tumblers objectAtIndex:p+1];
@@ -213,12 +282,6 @@
         Tumbler *t = [_tumblers objectAtIndex:p-1];
         [t decrement];
     }
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

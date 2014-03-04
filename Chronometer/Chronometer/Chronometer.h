@@ -33,6 +33,7 @@ typedef enum{
 
 - (id)initWithViewController:(ViewController *)controller;
 
+- (void)addLap;
 - (void)cancel;
 - (void)pause;
 - (void)reset;
