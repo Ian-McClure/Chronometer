@@ -145,18 +145,21 @@
         if (_chronometer.mode == kRunning) {
             [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            
             [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
             [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
             
         } else if (_chronometer.mode == kPaused) {
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
             [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
             [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
             
         } else { //kStopped
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
             [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
             [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
         }
@@ -168,11 +171,15 @@
             
             if (_rightButton.frame.origin.x > 160) {
                 [self animateButtonTransition:0];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
             }
             
         } else if (_chronometer.state == kPaused) {
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
             [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
             [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
             
@@ -182,6 +189,9 @@
             
             if (_rightButton.frame.origin.x < 320) {
                 [self animateButtonTransition:1];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
             }
         }
     }
@@ -203,7 +213,10 @@
             _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 160, _leftButton.frame.size.height),
             _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 58, 22, 58),
             _rightButton.frame = CGRectMake(160, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
-        } completion:NO];
+        } completion:^(BOOL finished) {
+            [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+        }];
     }
 }
 
@@ -213,24 +226,18 @@
     if (_chronometer.mode == kInterval) {
         if (_chronometer.state == kRunning) {
             [_chronometer pause];
-        } else if (_chronometer.state == kPaused) {
-            [_chronometer start];
         } else { //kStopped
             [_chronometer start];
         }
     } else if (_chronometer.mode == kTimer) {
         if (_chronometer.state == kRunning) {
             [_chronometer pause];
-        } else if (_chronometer.state == kPaused) {
-            [_chronometer start];
         } else { //kStopped
             [_chronometer start];
         }
     } else { //kStopwatch
         if (_chronometer.state == kRunning) {
             [_chronometer addLap];
-        } else if (_chronometer.state == kPaused) {
-            [_chronometer start];
         } else { //kStopped
             [_chronometer start];
         }

@@ -81,12 +81,13 @@
 
 - (void)reset {
     
-    [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    //[_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     
     _mode = kStopwatch;
     _state = kStopped;
     
     _startDate = [NSDate date];
+    //_stopDate = nil;
     [self update];
     
     [_viewController updateButtons];
@@ -94,17 +95,24 @@
 
 - (void)start {
     
-    _startDate = [NSDate date];
     NSLog(@"_startDate is: %@", _startDate);
+    NSLog(@"_stopDate is: %@", _stopDate);
     
     //If the timer was paused, see how long it has been paused
     //then add that time to the _startDate to offset the time it was paused;
-    if (_mode == kPaused) {
-        NSTimeInterval pauseTime = [_stopDate timeIntervalSinceNow];
+    if (_state == kPaused) {
+        NSLog(@"got here");
+        //timeIntervalSinceNow returns a negative number so we invert it.
+        NSTimeInterval pauseTime = [_stopDate timeIntervalSinceNow] * -1;
+        NSLog(@"%f", pauseTime);
         _startDate = [_startDate dateByAddingTimeInterval:pauseTime];
+        //_stopDate = nil;
+    } else {
+        _startDate = [NSDate date];
     }
     
     //A method that caused update: to be called everytime the screen refreshes;
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     _state = kRunning;
     
@@ -125,6 +133,7 @@
     }
     
     NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];
+    //NSLog(_formattedString);
     
     [_viewController updateCounter:_formattedString];
 }
