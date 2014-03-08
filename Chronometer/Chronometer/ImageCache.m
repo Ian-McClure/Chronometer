@@ -58,4 +58,12 @@
     return [UIImage imageNamed:string];
 }
 
+- (UIImage *)imageForPresetButton:(int)buttonNumber forPressed:(BOOL)pressed {
+    
+    NSString *string = [NSString stringWithFormat:@"presetButton%d", buttonNumber];
+    string = (pressed) ? [string stringByAppendingString:@"down.png"] : [string stringByAppendingString:@"up.png"];
+    
+    return [UIImage imageNamed:string];
+}
+
 @end

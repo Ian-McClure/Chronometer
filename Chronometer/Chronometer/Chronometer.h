@@ -26,7 +26,7 @@ typedef enum{
 } ChronoMode;
 
 //Public variables and methods are initialized here.
-@interface Chronometer : NSObject
+@interface Chronometer : NSObject <UIAlertViewDelegate>
 
 @property ChronoState state;
 @property ChronoMode mode;
@@ -34,6 +34,7 @@ typedef enum{
 - (id)initWithViewController:(ViewController *)controller;
 
 - (void)addLap;
+- (void)addTime:(long)timeInterval;
 - (void)cancel;
 - (void)pause;
 - (void)reset;

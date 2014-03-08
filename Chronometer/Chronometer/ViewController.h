@@ -13,6 +13,8 @@
 
 @interface ViewController : UIViewController
 
+- (void)presetButtonPressed:(id)sender;
+
 - (void)updateCounter:(NSString *)timeInterval;
 - (void)updateButtons;
 - (void)updateNextPlace:(Place)p;

@@ -18,7 +18,6 @@
     
     CustomKeyboard *_keyboard;
     
-    //Use two button that change their function instead of 5 different buttons?
     UIButton *_leftButton,
              *_rightButton;
     
@@ -47,44 +46,46 @@
     
     _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
     [_timerView setBackgroundColor:[UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]];
-    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
-    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
+//    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+//    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
     
-    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216)];
+    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216) viewController:self];
     [_keyboard setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
     
     _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
     
-    for (int i = 0; i <= 5; i++) {
-        //CGRectZero needs to be replaced!!!!!!
-        Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
-        [_tumblers addObject:t];
-    }
+//    for (int i = 0; i <= 5; i++) {
+//        Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
+//        [_tumblers addObject:t];
+//    }
     
     [self.view setBackgroundColor:[UIColor whiteColor]];
     
     _chronometer = [[Chronometer alloc] initWithViewController:self];
     
     //UIlabel is a UIView with text. This will be the visual representation for our timer.
-    _ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height/2 -64, 300, 128)];
+    //_ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height/2 -64, 300, 128)];
+    _ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height*0.25 -64, 300, 128)];
     [_ChronometerLabel setFont:[UIFont fontWithName:@"Baskerville" size:60]];
     [_ChronometerLabel setTextAlignment:NSTextAlignmentLeft];
     [_ChronometerLabel setTextColor:[UIColor blackColor]];
     [_ChronometerLabel setText:@"00:00:00.00"];
     
-    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
+//    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
+    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.5) withTag:0];
     [_leftButton addTarget:self action:@selector(leftButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     
-    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
+//    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
+    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.5)withTag:1];
     [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     
     //Objects won't draw unless they are added to the ViewController's view.
-    [self.view addSubview:_settingsView];
+    //[self.view addSubview:_settingsView];
     [self.view addSubview:_timerView];
     [_timerView addSubview:_ChronometerLabel];
     [_timerView addSubview:_leftButton];
     [_timerView addSubview:_rightButton];
-    [_settingsView addSubview:_keyboard];
+    [_timerView addSubview:_keyboard];
     
 }
 
@@ -223,22 +224,16 @@
 //Handles what happens when the left button was tapped.
 - (void)leftButtonTapped {
     NSLog(@"The left button was pressed.");
-    if (_chronometer.mode == kInterval) {
-        if (_chronometer.state == kRunning) {
-            [_chronometer pause];
-        } else { //kStopped
-            [_chronometer start];
-        }
-    } else if (_chronometer.mode == kTimer) {
-        if (_chronometer.state == kRunning) {
-            [_chronometer pause];
-        } else { //kStopped
-            [_chronometer start];
-        }
-    } else { //kStopwatch
+    if (_chronometer.mode == kStopwatch) {
         if (_chronometer.state == kRunning) {
             [_chronometer addLap];
-        } else { //kStopped
+        } else {
+            [_chronometer start];
+        }
+    } else {
+        if (_chronometer.state == kRunning) {
+            [_chronometer pause];
+        } else {
             [_chronometer start];
         }
     }
@@ -247,31 +242,26 @@
 //Handles what happens when the right button was tapped.
 - (void)rightButtonTapped {
     NSLog(@"The right button was pressed.");
-    if (_chronometer.mode == kInterval) {
-        if (_chronometer.state == kRunning) {
-            [_chronometer cancel];
-        } else if (_chronometer.state == kPaused) {
-            [_chronometer cancel];
-        } else { //kStopped
+    if (_chronometer.mode == kStopwatch) {
+        if (_chronometer.state == kPaused) {
             [_chronometer reset];
-        }
-    } else if (_chronometer.mode == kTimer) {
-        if (_chronometer.state == kRunning) {
-            [_chronometer cancel];
-        } else if (_chronometer.state == kPaused) {
-            [_chronometer cancel];
-        } else { //kStopped
-            [_chronometer reset];
-        }
-    } else { //kStopwatch
-        if (_chronometer.state == kRunning) {
+        } else {
             [_chronometer pause];
-        } else if (_chronometer.state == kPaused) {
+        }
+    } else {
+        if (_chronometer.state == kStopped) {
             [_chronometer reset];
-        } else { //kStopped
-            [_chronometer pause];
+        } else {
+            [_chronometer cancel];
         }
     }
+}
+
+- (void)presetButtonPressed:(id)sender {
+    UIButton *object = (UIButton *)sender;
+    long value = object.tag;
+    
+    [_chronometer addTime:value];
 }
 
 

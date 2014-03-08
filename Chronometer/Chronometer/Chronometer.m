@@ -62,6 +62,17 @@
     [_viewController updateButtons];
 }
 
+- (void)addTime:(long)timeInterval {
+    
+    NSTimeInterval interval = timeInterval;
+    _mode = kTimer;
+    _startDate = [[NSDate date] dateByAddingTimeInterval:interval];
+    _stopDate = [NSDate date];
+    
+    [self update];
+    [_viewController updateButtons];
+}
+
 - (void)cancel {
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
@@ -87,7 +98,7 @@
     _state = kStopped;
     
     _startDate = [NSDate date];
-    //_stopDate = nil;
+    _stopDate = nil;
     [self update];
     
     [_viewController updateButtons];
@@ -95,25 +106,23 @@
 
 - (void)start {
     
-    NSLog(@"_startDate is: %@", _startDate);
-    NSLog(@"_stopDate is: %@", _stopDate);
-    
     //If the timer was paused, see how long it has been paused
-    //then add that time to the _startDate to offset the time it was paused;
-    if (_state == kPaused) {
-        NSLog(@"got here");
+    //then add that time to the _startDate to offset the time it was paused.
+    if (nil != _stopDate) {
+
         //timeIntervalSinceNow returns a negative number so we invert it.
         NSTimeInterval pauseTime = [_stopDate timeIntervalSinceNow] * -1;
-        NSLog(@"%f", pauseTime);
+
         _startDate = [_startDate dateByAddingTimeInterval:pauseTime];
-        //_stopDate = nil;
+        _stopDate = nil;
+        
     } else {
         _startDate = [NSDate date];
     }
     
-    //A method that caused update: to be called everytime the screen refreshes;
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
     _state = kRunning;
     
     [_viewController updateButtons];
@@ -130,12 +139,32 @@
         _elapsedTime = [[NSDate date] timeIntervalSinceDate:_startDate];
     } else {
         _elapsedTime = [_startDate timeIntervalSinceNow];
+        
+        if (_elapsedTime < 0) {
+            [self cancel];
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Time's up!" message:@"" delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Restart", nil];
+            [alertView show];
+        }
     }
     
     NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];
     //NSLog(_formattedString);
     
     [_viewController updateCounter:_formattedString];
+}
+
+#pragma mark - AlertView delegate methods
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if ([buttonTitle isEqualToString:@"Restart"]) {
+        //Do Stuff
+    } else {
+        [self reset];
+    }
+    
 }
 
 @end
