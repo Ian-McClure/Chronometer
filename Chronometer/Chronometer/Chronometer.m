@@ -22,6 +22,8 @@
     
     NSMutableArray *_lapTimes;
     
+    NSTimeInterval _timerLengths[100];
+    
     //I need a reference to the ViewController so I can send it messages.
     ViewController *_viewController;
 }
@@ -62,28 +64,36 @@
     [_viewController updateButtons];
 }
 
-- (void)addTime:(long)timeInterval {
+- (void)addTime:(double)timeInterval {
     
-    NSTimeInterval interval = timeInterval;
-    _mode = kTimer;
-    _startDate = [[NSDate date] dateByAddingTimeInterval:interval];
-    _stopDate = [NSDate date];
+    if (_mode != kInterval) {
+        _timerLengths[0] = timeInterval;
+        _mode = kTimer;
+        _startDate = [[NSDate date] dateByAddingTimeInterval:_timerLengths[0]];
+        _stopDate = [NSDate date];
+        
+        [self update];
+        [_viewController updateButtons];
+    }
     
-    [self update];
-    [_viewController updateButtons];
 }
 
 - (void)cancel {
+    _state = kStopped;
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    if (_mode != kStopwatch) {
+        [self addTime:_timerLengths[0]];
+    }
     
     [_viewController updateButtons];
 }
 
 - (void)pause {
+    _state = kPaused;
     
     _stopDate = [NSDate date];
-    _state = kPaused;
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     
@@ -91,11 +101,8 @@
 }
 
 - (void)reset {
-    
-    //[_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    
-    _mode = kStopwatch;
     _state = kStopped;
+    _mode = kStopwatch;
     
     _startDate = [NSDate date];
     _stopDate = nil;
@@ -140,31 +147,43 @@
     } else {
         _elapsedTime = [_startDate timeIntervalSinceNow];
         
-        if (_elapsedTime < 0) {
+        if (_elapsedTime <= 0) {
             [self cancel];
+            _elapsedTime = 0;
+            
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Time's up!" message:@"" delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Restart", nil];
             [alertView show];
         }
     }
     
-    NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];
-    //NSLog(_formattedString);
-    
+    NSString *_formattedString = [_dateFormatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:_elapsedTime]];    
     [_viewController updateCounter:_formattedString];
 }
 
-#pragma mark - AlertView delegate methods
+#pragma mark - UIAlertView delegate methods
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
     
     if ([buttonTitle isEqualToString:@"Restart"]) {
-        //Do Stuff
+        [self start];
     } else {
         [self reset];
     }
     
+}
+
+#pragma mark - UITableView delegate methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    return 3;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return [[UITableViewCell alloc] init];
 }
 
 @end

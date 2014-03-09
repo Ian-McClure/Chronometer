@@ -46,13 +46,13 @@
     
     _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
     [_timerView setBackgroundColor:[UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]];
-//    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
-//    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
+    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
     
     _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216) viewController:self];
     [_keyboard setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
     
-    _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
+//    _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
     
 //    for (int i = 0; i <= 5; i++) {
 //        Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
@@ -79,13 +79,16 @@
     _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.5)withTag:1];
     [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+    [self.view addGestureRecognizer:panRecognizer];
+    
     //Objects won't draw unless they are added to the ViewController's view.
-    //[self.view addSubview:_settingsView];
+    [self.view addSubview:_settingsView];
     [self.view addSubview:_timerView];
     [_timerView addSubview:_ChronometerLabel];
     [_timerView addSubview:_leftButton];
     [_timerView addSubview:_rightButton];
-    [_timerView addSubview:_keyboard];
+    [_settingsView addSubview:_keyboard];
     
 }
 
@@ -131,41 +134,8 @@
 
 //Called by _chronometer to update the images of the buttons to match the state of the Chronometer.
 - (void)updateButtons {
-    if (_chronometer.mode == kInterval) {
-        
-        if (_chronometer.mode == kRunning) {
-            //Stuff
-        } else if (_chronometer.mode == kPaused) {
-            //Stuff
-        } else { //kStopped
-                 //Stuff
-        }
-        
-    } else if (_chronometer.mode == kTimer) {
-        
-        if (_chronometer.mode == kRunning) {
-            [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
-            
-            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
-            
-        } else if (_chronometer.mode == kPaused) {
-            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
-            
-            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
-            
-        } else { //kStopped
-            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
-            
-            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
-        }
-    } else { //kStopwatch
-        
+    
+    if (_chronometer.mode == kStopwatch) {
         if (_chronometer.state == kRunning) {
             [_leftButton setImage:[UIImage imageNamed:@"newlapup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"newlapdown.png"] forState:UIControlStateHighlighted];
@@ -194,6 +164,28 @@
                 [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
                 [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
             }
+        }
+    } else {
+        if (_chronometer.mode == kRunning) {
+            [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            
+            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
+            
+        } else if (_chronometer.mode == kPaused) {
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
+            
+        } else { //kStopped
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
         }
     }
 }
@@ -259,11 +251,52 @@
 
 - (void)presetButtonPressed:(id)sender {
     UIButton *object = (UIButton *)sender;
-    long value = object.tag;
+    double value = object.tag;
     
     [_chronometer addTime:value];
 }
 
+#pragma mark - Touch Methods
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
+    
+    CGPoint translation = [gesture translationInView:self.view];
+    
+    [_timerView setFrame:CGRectMake(0, translation.y, _timerView.frame.size.width, _timerView.frame.size.height)];
+    
+    if (gesture.state == UIGestureRecognizerStateEnded) {
+        [self autocompletePanGestureMovement:translation];
+    }
+    
+}
+
+- (void)autocompletePanGestureMovement:(CGPoint)translation {
+    if (translation.y < 0) {
+        if (_timerView.frame.origin.y < _screenSize.height * -0.15) {
+            [self animateTimerViewUp];
+        } else {
+            [self animateTimerViewDown];
+        }
+    } else {
+        if (_timerView.frame.origin.y > _screenSize.height * -0.35) {
+            [self animateTimerViewDown];
+        } else {
+            [self animateTimerViewUp];
+        }
+    }
+}
+
+- (void)animateTimerViewUp {
+    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        _timerView.center = CGPointMake(_screenSize.width/2, 0);
+    } completion:NO];
+}
+
+- (void)animateTimerViewDown {
+    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        _timerView.center = CGPointMake(_screenSize.width/2, _screenSize.height/2);
+    } completion:NO];
+}
 
 #pragma mark - Tumbler Delegate Methods
 
