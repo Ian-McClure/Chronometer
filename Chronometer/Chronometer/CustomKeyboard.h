@@ -13,5 +13,6 @@
 @interface CustomKeyboard : UIView
 
 - (id)initWithFrame:(CGRect)frame viewController:(ViewController *)controller;
+- (void)swapKeyboards;
 
 @end

@@ -10,6 +10,9 @@
 #import "Chronometer.h"
 #import "CustomKeyboard.h"
 
+#define AppWhiteColor [UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]
+#define AppGreyColor [UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]
+
 @interface ViewController () {
 
     CGSize _screenSize;
@@ -45,39 +48,16 @@
     _screenSize = [UIScreen mainScreen].bounds.size;
     
     _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
-    [_timerView setBackgroundColor:[UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]];
-    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
-    [_settingsView setBackgroundColor:[UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]];
+    [_timerView setBackgroundColor: AppWhiteColor];
+    
+    [self buildSettingsView];
     
     _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216) viewController:self];
-    [_keyboard setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
-    
-//    _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
-    
-//    for (int i = 0; i <= 5; i++) {
-//        Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
-//        [_tumblers addObject:t];
-//    }
-    
-    [self.view setBackgroundColor:[UIColor whiteColor]];
     
     _chronometer = [[Chronometer alloc] initWithViewController:self];
     
-    //UIlabel is a UIView with text. This will be the visual representation for our timer.
-    //_ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height/2 -64, 300, 128)];
-    _ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height*0.25 -64, 300, 128)];
-    [_ChronometerLabel setFont:[UIFont fontWithName:@"Baskerville" size:60]];
-    [_ChronometerLabel setTextAlignment:NSTextAlignmentLeft];
-    [_ChronometerLabel setTextColor:[UIColor blackColor]];
-    [_ChronometerLabel setText:@"00:00:00.00"];
-    
-//    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
-    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.5) withTag:0];
-    [_leftButton addTarget:self action:@selector(leftButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-    
-//    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
-    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.5)withTag:1];
-    [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self buildCounter];
+    [self buildButtons];
     
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:panRecognizer];
@@ -103,6 +83,44 @@
 - (void)updateCounter:(NSString *)timeInterval {
     
     [_ChronometerLabel setText:timeInterval];
+    
+}
+
+#pragma mark - builder methods
+
+- (void)buildButtons {
+    _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
+    [_leftButton addTarget:self action:@selector(leftButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    
+    _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
+    [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+}
+
+//Builds the visual representation of the timer.
+- (void)buildCounter {
+    if (_counterStyle == kSimpleTimer) {
+        
+        _ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height/2 -64, 300, 128)];
+        [_ChronometerLabel setFont:[UIFont fontWithName:@"Baskerville" size:60]];
+        [_ChronometerLabel setTextAlignment:NSTextAlignmentLeft];
+        [_ChronometerLabel setTextColor:[UIColor blackColor]];
+        [_ChronometerLabel setText:@"00:00:00.00"];
+        
+    } else {
+        
+        _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
+        
+        for (int i = 0; i <= 5; i++) {
+            Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
+            [_tumblers addObject:t];
+        }
+    }
+}
+
+-(void)buildSettingsView {
+    
+    _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+    [_settingsView setBackgroundColor: AppGreyColor];
     
 }
 
@@ -258,29 +276,42 @@
 
 #pragma mark - Touch Methods
 
+- (void)handleLabelTap:(id)sender {
+    
+}
+
 - (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
     
     CGPoint translation = [gesture translationInView:self.view];
     
-    [_timerView setFrame:CGRectMake(0, translation.y, _timerView.frame.size.width, _timerView.frame.size.height)];
+    [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
+    
     
     if (gesture.state == UIGestureRecognizerStateEnded) {
         [self autocompletePanGestureMovement:translation];
     }
     
+    //[gesture setTranslation:CGPointZero inView:self.view];
 }
 
 - (void)autocompletePanGestureMovement:(CGPoint)translation {
+    
     if (translation.y < 0) {
-        if (_timerView.frame.origin.y < _screenSize.height * -0.15) {
+        NSLog(@"translation is negative");
+        if (_timerView.frame.origin.y < _screenSize.height * -0.25) {
+            NSLog(@"moving view up");
             [self animateTimerViewUp];
         } else {
+            NSLog(@"moving view down");
             [self animateTimerViewDown];
         }
     } else {
-        if (_timerView.frame.origin.y > _screenSize.height * -0.35) {
+        NSLog(@"translation is positive");
+        if (_timerView.frame.origin.y > _screenSize.height * -0.25) {
+            NSLog(@"moving view down");
             [self animateTimerViewDown];
         } else {
+            NSLog(@"moving view up");
             [self animateTimerViewUp];
         }
     }

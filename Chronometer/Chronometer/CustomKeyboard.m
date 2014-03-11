@@ -10,6 +10,7 @@
 #import "ImageCache.h"
 #import "ViewController.h"
 
+
 @interface CustomKeyboard () {
     UIView *_numberPad;
     UIView *_preset;
@@ -31,6 +32,8 @@
         
         _viewController = controller;
         
+        [self setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
+        
         _presetButtons = [[NSMutableArray alloc] initWithCapacity:24];
         _preset = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 216)];
         
@@ -39,6 +42,10 @@
         [self addSubview:_preset];
     }
     return self;
+}
+
+- (void)swapKeyboards {
+    
 }
 
 //- (void) BuildNumberPad {

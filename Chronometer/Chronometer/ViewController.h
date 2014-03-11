@@ -11,7 +11,14 @@
 
 @class Chronometer;
 
+typedef enum {
+    kInteractiveTimer,
+    kSimpleTimer
+}timerStyle;
+
 @interface ViewController : UIViewController
+
+@property timerStyle counterStyle;
 
 - (void)presetButtonPressed:(id)sender;
 
