@@ -8,6 +8,7 @@
 
 #import "Tumbler.h"
 #import "ViewController.h"
+#import "ImageCache.h"
 
 #define kTop YES
 #define kBottom NO
@@ -16,6 +17,8 @@
     Digit _digit;
     Place _place;
     ViewController *_viewController;
+    UIImageView *_topImage;
+    UIImageView *_bottomImage;
 }
 
 @end
@@ -36,6 +39,8 @@
         _digit = d;
         _place = p;
         _viewController = v;
+        _topImage = [[UIImageView alloc] initWithImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kTop place:p]];
+        _bottomImage = [[UIImageView alloc] initWithImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kBottom place:p]];
         
     }
     return self;
