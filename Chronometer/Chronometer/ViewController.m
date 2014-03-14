@@ -29,7 +29,8 @@
     UILabel *_ChronometerLabel;
     
     UIView *_timerView,
-           *_settingsView;
+           *_settingsView,
+           *_tumblerView;
     
     NSMutableArray *_tumblers;
     
@@ -129,11 +130,14 @@
     } else {
         
         _tumblers = [[NSMutableArray alloc] initWithCapacity:6];
+        _tumblerView = [[UIView alloc] initWithFrame:CGRectMake(5, (_screenSize.height/2)-38, 310, 76)];
         
         for (int i = 0; i <= 5; i++) {
-            Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectZero Digit:kZero Place:(6-i) ViewController:self];
+            Tumbler *t = [[Tumbler alloc] initWithFrame:CGRectMake(i*43, 0, 42, 76) Digit:kZero Place:(6-i) ViewController:self];
             [_tumblers addObject:t];
+            [_tumblerView addSubview:t];
         }
+        [_timerView addSubview:_tumblerView];
     }
 }
 
@@ -341,7 +345,7 @@
     
     if (translation.y < 0) {
         NSLog(@"translation is negative");
-        if (_timerView.frame.origin.y < _screenSize.height * -0.25) {
+        if (_timerView.center.y < _screenSize.height * 0.40) {
             NSLog(@"moving view up");
             [self animateTimerViewUp];
         } else {
@@ -350,7 +354,7 @@
         }
     } else {
         NSLog(@"translation is positive");
-        if (_timerView.frame.origin.y > _screenSize.height * -0.25) {
+        if (_timerView.center.y > _screenSize.height * 0.10) {
             NSLog(@"moving view down");
             [self animateTimerViewDown];
         } else {
