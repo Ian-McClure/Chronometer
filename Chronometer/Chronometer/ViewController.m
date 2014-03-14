@@ -4,7 +4,7 @@
 //
 //  Created by Matthew Breton & Ian McClure on 2/14/14.
 //
-//
+//  Buttons in timer mode don't work.  Preset buttons don't draw on device.
 
 #import "ViewController.h"
 #import "Chronometer.h"
@@ -319,7 +319,10 @@
     UIButton *object = (UIButton *)sender;
     double value = object.tag;
     
-    [_chronometer addTime:value];
+    if (_chronometer.state == kStopped) {
+        [_chronometer addTime:value];
+    }
+    
 }
 
 - (void)updateTimeButton:(NSTimeInterval)interval {
