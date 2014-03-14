@@ -27,4 +27,6 @@ typedef enum {
 - (void)updateNextPlace:(Place)p;
 - (void)updatePreviousPlace:(Place)p;
 
+- (void)updateTimeButton:(NSTimeInterval)interval;
+
 @end

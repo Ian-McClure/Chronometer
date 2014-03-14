@@ -74,6 +74,7 @@
         
         [self update];
         [_viewController updateButtons];
+        [_viewController updateTimeButton:timeInterval];
     }
     
 }

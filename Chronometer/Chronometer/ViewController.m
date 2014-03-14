@@ -22,7 +22,9 @@
     CustomKeyboard *_keyboard;
     
     UIButton *_leftButton,
-             *_rightButton;
+             *_rightButton,
+             *_resetButton,
+             *_timeButton;
     
     UILabel *_ChronometerLabel;
     
@@ -46,30 +48,23 @@
     [super viewDidLoad];
     
     _screenSize = [UIScreen mainScreen].bounds.size;
-    
-    _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
-    [_timerView setBackgroundColor: AppWhiteColor];
-    
-    [self buildSettingsView];
-    
-    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height - 216, _screenSize.width, 216) viewController:self];
+    _counterStyle = kSimpleTimer;
     
     _chronometer = [[Chronometer alloc] initWithViewController:self];
-    
-    [self buildCounter];
-    [self buildButtons];
     
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:panRecognizer];
     
+    [self buildTimerView];
+    [self buildSettingsView];
+    
+    [self buildCounter];
+    [self buildButtons];
+    
+    
     //Objects won't draw unless they are added to the ViewController's view.
     [self.view addSubview:_settingsView];
     [self.view addSubview:_timerView];
-    [_timerView addSubview:_ChronometerLabel];
-    [_timerView addSubview:_leftButton];
-    [_timerView addSubview:_rightButton];
-    [_settingsView addSubview:_keyboard];
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,7 +81,27 @@
     
 }
 
-#pragma mark - builder methods
+#pragma mark - Actions
+
+- (void)callKeyboard {
+    
+//    if (nil == _keyboard) {
+//        _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
+//    }
+    
+    if (_keyboard.center.y > 568) {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            _keyboard.center = CGPointMake(_screenSize.width/2, _screenSize.height - 108);
+        } completion:NO];
+    } else {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            _keyboard.center = CGPointMake(_screenSize.width/2, _screenSize.height + 108);
+        } completion:NO];
+    }
+    
+}
+
+#pragma mark - Builder methods
 
 - (void)buildButtons {
     _leftButton = [self createButtonAtLocation:CGPointMake(0, _screenSize.height * 0.75) withTag:0];
@@ -94,17 +109,22 @@
     
     _rightButton = [self createButtonAtLocation:CGPointMake(320, _screenSize.height * 0.75)withTag:1];
     [_rightButton addTarget:self action:@selector(rightButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_timerView addSubview:_leftButton];
+    [_timerView addSubview:_rightButton];
 }
 
 //Builds the visual representation of the timer.
 - (void)buildCounter {
     if (_counterStyle == kSimpleTimer) {
         
+
         _ChronometerLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, _screenSize.height/2 -64, 300, 128)];
         [_ChronometerLabel setFont:[UIFont fontWithName:@"Baskerville" size:60]];
         [_ChronometerLabel setTextAlignment:NSTextAlignmentLeft];
         [_ChronometerLabel setTextColor:[UIColor blackColor]];
         [_ChronometerLabel setText:@"00:00:00.00"];
+        [_timerView addSubview:_ChronometerLabel];
         
     } else {
         
@@ -117,10 +137,34 @@
     }
 }
 
--(void)buildSettingsView {
+- (void)buildSettingsView {
     
     _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
     [_settingsView setBackgroundColor: AppGreyColor];
+    
+    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
+    
+    _timeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_timeButton setFrame:CGRectMake(5, 284, 266, 44)];
+    [_timeButton setBackgroundColor: AppWhiteColor];
+    [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
+    [_timeButton addTarget:self action:@selector(callKeyboard) forControlEvents:UIControlEventTouchUpInside];
+    
+    _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_resetButton setFrame:CGRectMake(271, 284, 44, 44)];
+    [_resetButton setBackgroundColor:AppWhiteColor];
+    [_resetButton setTitle:@"X" forState:UIControlStateNormal];
+    [_resetButton addTarget:_chronometer action:@selector(reset) forControlEvents:UIControlEventTouchUpInside];
+    
+    [_settingsView addSubview:_timeButton];
+    [_settingsView addSubview:_resetButton];
+    [_settingsView addSubview:_keyboard];
+}
+
+- (void)buildTimerView {
+    
+    _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
+    [_timerView setBackgroundColor: AppWhiteColor];
     
 }
 
@@ -274,11 +318,12 @@
     [_chronometer addTime:value];
 }
 
+- (void)updateTimeButton:(NSTimeInterval)interval {
+    [_timeButton setTitle:[NSString stringWithFormat:@"%f", interval] forState:UIControlStateNormal];
+}
+
 #pragma mark - Touch Methods
 
-- (void)handleLabelTap:(id)sender {
-    
-}
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
     
@@ -289,9 +334,7 @@
     
     if (gesture.state == UIGestureRecognizerStateEnded) {
         [self autocompletePanGestureMovement:translation];
-    }
-    
-    //[gesture setTranslation:CGPointZero inView:self.view];
+    }    
 }
 
 - (void)autocompletePanGestureMovement:(CGPoint)translation {
