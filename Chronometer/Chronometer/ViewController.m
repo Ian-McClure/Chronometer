@@ -4,7 +4,12 @@
 //
 //  Created by Matthew Breton & Ian McClure on 2/14/14.
 //
-//  Buttons in timer mode don't work.  Preset buttons don't draw on device.
+//
+
+/*
+ Bug list!
+ 
+ */
 
 #import "ViewController.h"
 #import "Chronometer.h"
@@ -14,7 +19,9 @@
 #define AppGreyColor [UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]
 
 @interface ViewController () {
-
+    
+    bool atTop;
+    
     CGSize _screenSize;
     
     Chronometer *_chronometer;
@@ -36,7 +43,7 @@
     
 }
 
-- (void)animateButtonTransition:(uint)direction;
+- (void)animateButtonTransitionWithDirection:(int)direction;
 - (void)updateNextPlace:(Place)p;
 - (void)updatePreviousPlace:(Place)p;
 
@@ -149,13 +156,13 @@
     _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
     
     _timeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_timeButton setFrame:CGRectMake(5, 284, 266, 44)];
+    [_timeButton setFrame:CGRectMake(5, 300, 266, 44)];
     [_timeButton setBackgroundColor: AppWhiteColor];
     [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
     [_timeButton addTarget:self action:@selector(callKeyboard) forControlEvents:UIControlEventTouchUpInside];
     
     _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_resetButton setFrame:CGRectMake(271, 284, 44, 44)];
+    [_resetButton setFrame:CGRectMake(271, 300, 44, 44)];
     [_resetButton setBackgroundColor:AppWhiteColor];
     [_resetButton setTitle:@"X" forState:UIControlStateNormal];
     [_resetButton addTarget:_chronometer action:@selector(reset) forControlEvents:UIControlEventTouchUpInside];
@@ -206,75 +213,105 @@
             [_leftButton setImage:[UIImage imageNamed:@"newlapup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"newlapdown.png"] forState:UIControlStateHighlighted];
             
-            if (_rightButton.frame.origin.x > 160) {
-                [self animateButtonTransition:0];
+            if (_rightButton.frame.origin.x != 160) {
+                [self animateButtonTransitionWithDirection:0];
             } else {
                 [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
                 [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            }
+            
+            
+        } else if (_chronometer.state == kPaused) {
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x != 160) {
+                [self animateButtonTransitionWithDirection:0];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+            }
+            
+        } else { //kStopped
+            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x != 320) {
+                [self animateButtonTransitionWithDirection:1];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            }
+        }
+    } else {
+        if (_chronometer.state == kRunning) {
+            [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+            [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            
+            if (_rightButton.frame.origin.x != 160) {
+                [self animateButtonTransitionWithDirection:0];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
             }
             
         } else if (_chronometer.state == kPaused) {
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
             
-            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
-            
-        } else { //kStopped
-            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
-            
-            if (_rightButton.frame.origin.x < 320) {
-                [self animateButtonTransition:1];
+            if (_rightButton.frame.origin.x != 160) {
+                [self animateButtonTransitionWithDirection:0];
             } else {
-                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+                [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
             }
-        }
-    } else {
-        if (_chronometer.mode == kRunning) {
-            [_leftButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
-            
-            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
-            
-        } else if (_chronometer.mode == kPaused) {
-            [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
-            [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
-            
-            [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
             
         } else { //kStopped
             [_leftButton setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
             [_leftButton setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
             
-            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+            if (_rightButton.frame.origin.x != 320) {
+                [self animateButtonTransitionWithDirection:1];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+            }
         }
     }
 }
 
 //for direction 1 represent out and 0 represents in for the right button.
-- (void)animateButtonTransition:(uint)direction {
+- (void)animateButtonTransitionWithDirection:(int)direction {
     if (direction == 1) {
         [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 320, _leftButton.frame.size.height),
             _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 138, 22, 138),
             _rightButton.frame = CGRectMake(320, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
         } completion:^(BOOL finished) {
-            [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            if (_chronometer.mode == kStopwatch) {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
+            }
         }];
     } else {
+        
+        if (_chronometer.mode != kStopwatch) {
+            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+        }
+        
         [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 160, _leftButton.frame.size.height),
             _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 58, 22, 58),
             _rightButton.frame = CGRectMake(160, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
         } completion:^(BOOL finished) {
-            [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            if (_chronometer.mode == kStopwatch) {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            }
         }];
     }
 }
@@ -307,10 +344,10 @@
             [_chronometer pause];
         }
     } else {
-        if (_chronometer.state == kStopped) {
-            [_chronometer reset];
-        } else {
+        if (_chronometer.state == kRunning) {
             [_chronometer cancel];
+        } else {
+            [_chronometer reset];
         }
     }
 }
@@ -336,9 +373,12 @@
     
     CGPoint translation = [gesture translationInView:self.view];
     
-    [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
-    
-    
+    if (atTop == YES) {
+        [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + translation.y)];
+    } else {
+        [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
+    }
+        
     if (gesture.state == UIGestureRecognizerStateEnded) {
         [self autocompletePanGestureMovement:translation];
     }    
@@ -347,21 +387,15 @@
 - (void)autocompletePanGestureMovement:(CGPoint)translation {
     
     if (translation.y < 0) {
-        NSLog(@"translation is negative");
         if (_timerView.center.y < _screenSize.height * 0.40) {
-            NSLog(@"moving view up");
             [self animateTimerViewUp];
         } else {
-            NSLog(@"moving view down");
             [self animateTimerViewDown];
         }
     } else {
-        NSLog(@"translation is positive");
         if (_timerView.center.y > _screenSize.height * 0.10) {
-            NSLog(@"moving view down");
             [self animateTimerViewDown];
         } else {
-            NSLog(@"moving view up");
             [self animateTimerViewUp];
         }
     }
@@ -371,12 +405,14 @@
     [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         _timerView.center = CGPointMake(_screenSize.width/2, 0);
     } completion:NO];
+    atTop = YES;
 }
 
 - (void)animateTimerViewDown {
     [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         _timerView.center = CGPointMake(_screenSize.width/2, _screenSize.height/2);
     } completion:NO];
+    atTop = NO;
 }
 
 #pragma mark - Tumbler Delegate Methods

@@ -39,9 +39,14 @@
         _digit = d;
         _place = p;
         _viewController = v;
-        _topImage = [[UIImageView alloc] initWithImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kTop place:p]];
-        _bottomImage = [[UIImageView alloc] initWithImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kBottom place:p]];
+        _topImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 4, 42, 33)];
+        [_topImage setImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kTop place:p]];
         
+        _bottomImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 38, 42, 33)];
+        [_bottomImage setImage:[[ImageCache sharedImageCache] imageForTumbler:d half:kBottom place:p]];
+        
+        [self addSubview:_topImage];
+        [self addSubview:_bottomImage];
     }
     return self;
 }

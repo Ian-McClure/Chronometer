@@ -36,10 +36,10 @@
     
     NSString *string = [NSString stringWithFormat:@"tumbler%d", digit];
 
-    if (place == 2 || place == 4) {
+    if (place == 5 || place == 3) {
         string = [string stringByAppendingString:@"rightcolon"];
-    } else if (place == 1 || place == 3) {
-        string = [string stringByAppendingString:@"leftCcolon"];
+    } else if (place == 4 || place == 2) {
+        string = [string stringByAppendingString:@"leftcolon"];
     } else {
         string = [string stringByAppendingString:@"nocolon"];
     }
@@ -54,13 +54,13 @@
         }
     }
     string = [string stringByAppendingString:@".png"];
-    
+        
     return [UIImage imageNamed:string];
 }
 
 - (UIImage *)imageForPresetButton:(int)buttonNumber forPressed:(BOOL)pressed {
     
-    NSString *string = [NSString stringWithFormat:@"presetButton%d", buttonNumber];
+    NSString *string = [NSString stringWithFormat:@"presetbutton%d", buttonNumber];
     string = (pressed) ? [string stringByAppendingString:@"down.png"] : [string stringByAppendingString:@"up.png"];
     
     return [UIImage imageNamed:string];

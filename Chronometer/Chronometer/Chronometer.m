@@ -61,18 +61,20 @@
     
     NSLog(@"A new lap time will have been added.");
     
-    [_viewController updateButtons];
 }
 
 - (void)addTime:(double)timeInterval {
     
     if (_mode != kInterval) {
+        
         _timerLengths[0] = timeInterval;
         _mode = kTimer;
+        _state = kPaused;
         _startDate = [[NSDate date] dateByAddingTimeInterval:_timerLengths[0]];
         _stopDate = [NSDate date];
         
         [self update];
+        
         [_viewController updateButtons];
         [_viewController updateTimeButton:timeInterval];
     }
@@ -80,6 +82,7 @@
 }
 
 - (void)cancel {
+    
     _state = kStopped;
     
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
