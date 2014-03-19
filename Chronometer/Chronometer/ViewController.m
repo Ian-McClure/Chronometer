@@ -6,9 +6,14 @@
 //
 //
 
-/*
+/***********************************************
  Bug list!
  
+ ***********************************************
+ Intentional bugs! er.. features!
+ 
+ Seconds should always count down from 99 if it is input that way.
+ Act like a microwave.
  */
 
 #import "ViewController.h"
@@ -43,12 +48,31 @@
     
 }
 
+- (void)buildButtons;
+- (void)buildCounter;
+- (void)buildSettingsView;
+- (void)buildTimerView;
+
 - (void)animateButtonTransitionWithDirection:(int)direction;
+- (void)animateTimerViewDown;
+- (void)animateTimerViewUp;
+- (void)autocompletePanGestureMovement:(CGPoint)translation;
+- (void)callKeyboard;
+- (UIButton *)createButtonAtLocation:(CGPoint)location withTag:(uint)tag;
+- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture;
+- (void)leftButtonTapped;
+- (void)numberPadButtonPressed:(id)sender;
+- (void)presetButtonPressed:(id)sender;
+- (void)rightButtonTapped;
+- (void)updateButtons;
+- (void)updateCounter:(NSString *)timeInterval;
 - (void)updateNextPlace:(Place)p;
 - (void)updatePreviousPlace:(Place)p;
+- (void)updateTimeButton:(NSTimeInterval)interval;
 
 @end
 
+#pragma mark -
 @implementation ViewController
 
 - (void)viewDidLoad
@@ -81,14 +105,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-//not sure what to call this method.
-//Updates the Chronometer's view to show the correct timeInterval.
-- (void)updateCounter:(NSString *)timeInterval {
-    
-    [_ChronometerLabel setText:timeInterval];
-    
-}
-
 #pragma mark - Actions
 
 - (void)callKeyboard {
@@ -106,6 +122,14 @@
             _keyboard.center = CGPointMake(_screenSize.width/2, _screenSize.height + 108);
         } completion:NO];
     }
+    
+}
+
+//not sure what to call this method.
+//Updates the Chronometer's view to show the correct timeInterval.
+- (void)updateCounter:(NSString *)timeInterval {
+    
+    [_ChronometerLabel setText:timeInterval];
     
 }
 
@@ -181,28 +205,131 @@
 
 #pragma mark - Button Methods
 
+//for direction 1 represent out and 0 represents in for the right button.
+- (void)animateButtonTransitionWithDirection:(int)direction {
+    if (direction == 1) {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 320, _leftButton.frame.size.height),
+            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 138, 22, 138),
+            _rightButton.frame = CGRectMake(320, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
+        } completion:^(BOOL finished) {
+            if (_chronometer.mode == kStopwatch) {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            } else {
+                [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
+            }
+        }];
+    } else {
+        
+        if (_chronometer.mode != kStopwatch) {
+            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
+            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
+        }
+        
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 160, _leftButton.frame.size.height),
+            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 58, 22, 58),
+            _rightButton.frame = CGRectMake(160, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
+        } completion:^(BOOL finished) {
+            if (_chronometer.mode == kStopwatch) {
+                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
+                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
+            }
+        }];
+    }
+}
+
 //Tag 0 represents the left button. Tag 1 represents the right button
 - (UIButton *)createButtonAtLocation:(CGPoint)location withTag:(uint)tag {
     
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTag:tag];
     [button setBackgroundColor:[UIColor clearColor]];
-
+    
     if (tag == 0) {
         [button setFrame:CGRectMake(location.x, location.y-44, 320, 88)];
         [button setImage:[UIImage imageNamed:@"startup.png"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"startdown.png"] forState:UIControlStateHighlighted];
         [button setContentEdgeInsets:UIEdgeInsetsMake(22, 138, 22, 138)];
-
+        
     } else {
         [button setFrame:CGRectMake(location.x, location.y-44, 160, 88)];
         [button setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
         [button setContentEdgeInsets:UIEdgeInsetsMake(22, 58, 22, 58)];
-
+        
     }
     
     return button;
+}
+
+//Handles what happens when the left button was tapped.
+- (void)leftButtonTapped {
+    NSLog(@"The left button was pressed.");
+    if (_chronometer.mode == kStopwatch) {
+        if (_chronometer.state == kRunning) {
+            [_chronometer addLap];
+        } else {
+            [_chronometer start];
+        }
+    } else {
+        if (_chronometer.state == kRunning) {
+            [_chronometer pause];
+        } else {
+            [_chronometer start];
+        }
+    }
+}
+
+//tag 10 == Accept; tag 11 == Delete;
+- (void)numberPadButtonPressed:(id)sender {
+    
+    UIButton *object = (UIButton *)sender;
+    int value = (int)[object tag];
+    
+    
+    
+    switch (value) {
+        case 11:
+            //Delete the input time
+            break;
+        case 10:
+            //Accept the last digit
+            break;
+        default:
+            
+            break;
+    }
+}
+
+- (void)presetButtonPressed:(id)sender {
+    UIButton *object = (UIButton *)sender;
+    double value = [object tag];
+    
+    if (_chronometer.state == kStopped) {
+        [_chronometer addTime:value];
+    }
+    
+}
+
+//Handles what happens when the right button was tapped.
+- (void)rightButtonTapped {
+    NSLog(@"The right button was pressed.");
+    if (_chronometer.mode == kStopwatch) {
+        if (_chronometer.state == kPaused) {
+            [_chronometer reset];
+        } else {
+            [_chronometer pause];
+        }
+    } else {
+        if (_chronometer.state == kRunning) {
+            [_chronometer cancel];
+        } else {
+            [_chronometer reset];
+        }
+    }
 }
 
 //Called by _chronometer to update the images of the buttons to match the state of the Chronometer.
@@ -280,108 +407,24 @@
     }
 }
 
-//for direction 1 represent out and 0 represents in for the right button.
-- (void)animateButtonTransitionWithDirection:(int)direction {
-    if (direction == 1) {
-        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 320, _leftButton.frame.size.height),
-            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 138, 22, 138),
-            _rightButton.frame = CGRectMake(320, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
-        } completion:^(BOOL finished) {
-            if (_chronometer.mode == kStopwatch) {
-                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
-            } else {
-                [_rightButton setImage:[UIImage imageNamed:@"cancelup.png"] forState:UIControlStateNormal];
-                [_rightButton setImage:[UIImage imageNamed:@"canceldown.png"] forState:UIControlStateHighlighted];
-            }
-        }];
-    } else {
-        
-        if (_chronometer.mode != kStopwatch) {
-            [_rightButton setImage:[UIImage imageNamed:@"resetup.png"] forState:UIControlStateNormal];
-            [_rightButton setImage:[UIImage imageNamed:@"resetdown.png"] forState:UIControlStateHighlighted];
-        }
-        
-        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            _leftButton.frame = CGRectMake(_leftButton.frame.origin.x, _leftButton.frame.origin.y, 160, _leftButton.frame.size.height),
-            _leftButton.contentEdgeInsets = UIEdgeInsetsMake(22, 58, 22, 58),
-            _rightButton.frame = CGRectMake(160, _rightButton.frame.origin.y, _rightButton.frame.size.width, _rightButton.frame.size.height);
-        } completion:^(BOOL finished) {
-            if (_chronometer.mode == kStopwatch) {
-                [_rightButton setImage:[UIImage imageNamed:@"pauseup.png"] forState:UIControlStateNormal];
-                [_rightButton setImage:[UIImage imageNamed:@"pausedown.png"] forState:UIControlStateHighlighted];
-            }
-        }];
-    }
-}
-
-//Handles what happens when the left button was tapped.
-- (void)leftButtonTapped {
-    NSLog(@"The left button was pressed.");
-    if (_chronometer.mode == kStopwatch) {
-        if (_chronometer.state == kRunning) {
-            [_chronometer addLap];
-        } else {
-            [_chronometer start];
-        }
-    } else {
-        if (_chronometer.state == kRunning) {
-            [_chronometer pause];
-        } else {
-            [_chronometer start];
-        }
-    }
-}
-
-//Handles what happens when the right button was tapped.
-- (void)rightButtonTapped {
-    NSLog(@"The right button was pressed.");
-    if (_chronometer.mode == kStopwatch) {
-        if (_chronometer.state == kPaused) {
-            [_chronometer reset];
-        } else {
-            [_chronometer pause];
-        }
-    } else {
-        if (_chronometer.state == kRunning) {
-            [_chronometer cancel];
-        } else {
-            [_chronometer reset];
-        }
-    }
-}
-
-- (void)presetButtonPressed:(id)sender {
-    UIButton *object = (UIButton *)sender;
-    double value = object.tag;
-    
-    if (_chronometer.state == kStopped) {
-        [_chronometer addTime:value];
-    }
-    
-}
-
 - (void)updateTimeButton:(NSTimeInterval)interval {
     [_timeButton setTitle:[NSString stringWithFormat:@"%f", interval] forState:UIControlStateNormal];
 }
 
 #pragma mark - Touch Methods
 
+- (void)animateTimerViewDown {
+    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        _timerView.center = CGPointMake(_screenSize.width/2, _screenSize.height/2);
+    } completion:NO];
+    atTop = NO;
+}
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
-    
-    CGPoint translation = [gesture translationInView:self.view];
-    
-    if (atTop == YES) {
-        [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + translation.y)];
-    } else {
-        [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
-    }
-        
-    if (gesture.state == UIGestureRecognizerStateEnded) {
-        [self autocompletePanGestureMovement:translation];
-    }    
+- (void)animateTimerViewUp {
+    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        _timerView.center = CGPointMake(_screenSize.width/2, 0);
+    } completion:NO];
+    atTop = YES;
 }
 
 - (void)autocompletePanGestureMovement:(CGPoint)translation {
@@ -401,18 +444,19 @@
     }
 }
 
-- (void)animateTimerViewUp {
-    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        _timerView.center = CGPointMake(_screenSize.width/2, 0);
-    } completion:NO];
-    atTop = YES;
-}
-
-- (void)animateTimerViewDown {
-    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-        _timerView.center = CGPointMake(_screenSize.width/2, _screenSize.height/2);
-    } completion:NO];
-    atTop = NO;
+- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
+    
+    CGPoint translation = [gesture translationInView:self.view];
+    
+    if (atTop == YES) {
+        [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + translation.y)];
+    } else {
+        [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
+    }
+    
+    if (gesture.state == UIGestureRecognizerStateEnded) {
+        [self autocompletePanGestureMovement:translation];
+    }
 }
 
 #pragma mark - Tumbler Delegate Methods

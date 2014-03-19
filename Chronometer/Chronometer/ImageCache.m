@@ -25,9 +25,6 @@
 }
 
 - (UIImage *)imageNamed:(NSString *)string {
-    
-    NSString *tag = [string substringFromIndex:(string.length - 4)];
-    string = ([tag isEqualToString:@".png"]) ? string : [string stringByAppendingString:@".png"];
 
     return [UIImage imageNamed:string];
 }
@@ -46,14 +43,10 @@
     string = (top) ? [string stringByAppendingString:@"top"] : [string stringByAppendingString:@"bottom"];
     
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
     if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
-        if ([UIScreen mainScreen].bounds.size.height) {
-            string = [string stringByAppendingString:@"568hlandscape"];
-        } else {
             string = [string stringByAppendingString:@"landscape"];
-        }
     }
-    string = [string stringByAppendingString:@".png"];
         
     return [UIImage imageNamed:string];
 }
@@ -61,7 +54,15 @@
 - (UIImage *)imageForPresetButton:(int)buttonNumber forPressed:(BOOL)pressed {
     
     NSString *string = [NSString stringWithFormat:@"presetbutton%d", buttonNumber];
-    string = (pressed) ? [string stringByAppendingString:@"down.png"] : [string stringByAppendingString:@"up.png"];
+    string = (pressed) ? [string stringByAppendingString:@"down"] : [string stringByAppendingString:@"up"];
+    
+    return [UIImage imageNamed:string];
+}
+
+- (UIImage *)imageForNumberPad:(int)buttonNumber forPressed:(BOOL)pressed {
+    
+    NSString *string = [NSString stringWithFormat:@"numberpad%d", buttonNumber];
+    string = (pressed) ? [string stringByAppendingString:@"down"] : [string stringByAppendingString:@"up"];
     
     return [UIImage imageNamed:string];
 }

@@ -21,6 +21,7 @@ typedef enum {
 @property timerStyle counterStyle;
 
 - (void)presetButtonPressed:(id)sender;
+- (void)numberPadButtonPressed:(id)sender;
 
 - (void)updateCounter:(NSString *)timeInterval;
 - (void)updateButtons;
