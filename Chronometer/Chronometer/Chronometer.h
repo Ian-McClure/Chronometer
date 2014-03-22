@@ -38,6 +38,7 @@ typedef enum{
 - (void)cancel;
 - (void)pause;
 - (void)reset;
+- (void)setTime:(double)timeInterval;
 - (void)start;
 
 

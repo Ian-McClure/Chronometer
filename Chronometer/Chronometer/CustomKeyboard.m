@@ -32,13 +32,13 @@
         
         [self setBackgroundColor:[UIColor colorWithRed:.776 green:.772 blue:.788 alpha:.5]];
         
-        //_preset = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 216)];
-        _numberPad = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 216)];
+        _preset = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 216)];
+        _numberPad = [[UIView alloc] initWithFrame:CGRectMake(320, 0, 320, 216)];
         
         [self BuildNumberPad];
-        //[self BuildPreset];
+        [self BuildPreset];
         [self addSubview:_numberPad];
-        //[self addSubview:_preset];
+        [self addSubview:_preset];
     }
     return self;
 }

@@ -63,11 +63,10 @@
     
 }
 
-- (void)addTime:(double)timeInterval {
-    
+- (void)addTime:(double)interval {
     if (_mode != kInterval) {
         
-        _timerLengths[0] = timeInterval;
+        _timerLengths[0] += interval;
         _mode = kTimer;
         _state = kPaused;
         _startDate = [[NSDate date] dateByAddingTimeInterval:_timerLengths[0]];
@@ -76,9 +75,8 @@
         [self update];
         
         [_viewController updateButtons];
-        [_viewController updateTimeButton:timeInterval];
+        //[_viewController updateTimeButton:interval];
     }
-    
 }
 
 - (void)cancel {
@@ -88,7 +86,7 @@
     [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
     
     if (_mode != kStopwatch) {
-        [self addTime:_timerLengths[0]];
+        [self setTime:_timerLengths[0]];
     }
     
     [_viewController updateButtons];
@@ -108,11 +106,33 @@
     _state = kStopped;
     _mode = kStopwatch;
     
+    for (int i = 0; i < 100; i++) {
+        _timerLengths[i] = 0;
+    }
+    
     _startDate = [NSDate date];
     _stopDate = nil;
     [self update];
     
     [_viewController updateButtons];
+}
+
+- (void)setTime:(double)interval {
+    
+    if (_mode != kInterval) {
+        
+        _timerLengths[0] = interval;
+        _mode = kTimer;
+        _state = kPaused;
+        _startDate = [[NSDate date] dateByAddingTimeInterval:_timerLengths[0]];
+        _stopDate = [NSDate date];
+        
+        [self update];
+        
+        [_viewController updateButtons];
+        //[_viewController updateTimeButton:interval];
+    }
+    
 }
 
 - (void)start {

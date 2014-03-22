@@ -11,9 +11,7 @@
  
  ***********************************************
  Intentional bugs! er.. features!
- 
- Seconds should always count down from 99 if it is input that way.
- Act like a microwave.
+
  */
 
 #import "ViewController.h"
@@ -32,6 +30,8 @@
     Chronometer *_chronometer;
     
     CustomKeyboard *_keyboard;
+    
+    NSString *_customTime;
     
     UIButton *_leftButton,
              *_rightButton,
@@ -84,6 +84,8 @@
     
     _chronometer = [[Chronometer alloc] initWithViewController:self];
     
+    _customTime = @"";
+    
     UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [self.view addGestureRecognizer:panRecognizer];
     
@@ -106,6 +108,34 @@
 }
 
 #pragma mark - Actions
+
+- (void)acceptCustomTime {
+
+    [_chronometer reset];
+    
+    NSArray *substrings = [_timeButton.titleLabel.text componentsSeparatedByString:@":"];
+    
+    double hours = [[substrings objectAtIndex:0] doubleValue]*3600;
+    double minutes = [[substrings objectAtIndex:1] doubleValue]*60;
+    double seconds = [[substrings objectAtIndex:2] doubleValue];
+    
+    NSLog(@"%f, %f, %f", hours, minutes, seconds);
+    
+    if (hours != 0) {
+        [_chronometer addTime:hours];
+    }
+    
+    if (minutes != 0) {
+        [_chronometer addTime:minutes];
+    }
+    
+    if (seconds != 0) {
+        [_chronometer addTime:seconds];
+    }
+    
+    _customTime = @"";
+    //[self updateTimeButtonTitle];
+}
 
 - (void)callKeyboard {
     
@@ -131,6 +161,25 @@
     
     [_ChronometerLabel setText:timeInterval];
     
+}
+
+- (void)updateTimeButtonTitle {
+    
+    NSString *string = @"";
+    
+    for (int i = 6; i > [_customTime length]; i--) {
+        string = [string stringByAppendingString:@"0"];
+    }
+    
+    string = [string stringByAppendingString:_customTime];
+    
+    if ([string isEqualToString:@"000000"]) {
+        string = @"hh:mm:ss";
+    } else {
+        string = [NSString stringWithFormat:@"%@:%@:%@", [string substringWithRange:NSMakeRange(0, 2)], [string substringWithRange:NSMakeRange(2, 2)], [string substringWithRange:NSMakeRange(4, 2)]];
+    }
+    
+    [_timeButton setTitle:string forState:UIControlStateNormal];
 }
 
 #pragma mark - Builder methods
@@ -177,12 +226,13 @@
     _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
     [_settingsView setBackgroundColor: AppGreyColor];
     
-    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
+    _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height-216, _screenSize.width, 216) viewController:self];
     
     _timeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_timeButton setFrame:CGRectMake(5, 300, 266, 44)];
     [_timeButton setBackgroundColor: AppWhiteColor];
     [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
+    [_timeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [_timeButton addTarget:self action:@selector(callKeyboard) forControlEvents:UIControlEventTouchUpInside];
     
     _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -190,6 +240,7 @@
     [_resetButton setBackgroundColor:AppWhiteColor];
     [_resetButton setTitle:@"X" forState:UIControlStateNormal];
     [_resetButton addTarget:_chronometer action:@selector(reset) forControlEvents:UIControlEventTouchUpInside];
+    [_resetButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     
     [_settingsView addSubview:_timeButton];
     [_settingsView addSubview:_resetButton];
@@ -289,17 +340,29 @@
     UIButton *object = (UIButton *)sender;
     int value = (int)[object tag];
     
-    
-    
     switch (value) {
         case 11:
-            //Delete the input time
+            if ([_customTime length] > 0) {
+                _customTime = [_customTime substringToIndex:[_customTime length]-1];
+                [self updateTimeButtonTitle];
+            } else {
+                [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
+            }
             break;
         case 10:
-            //Accept the last digit
+            [self acceptCustomTime];
             break;
         default:
             
+            if ([_customTime isEqualToString:@"0"]) {
+                _customTime = @"";
+            }
+            
+            if ([_customTime length] < 6) {
+                _customTime = [_customTime stringByAppendingString:[NSString stringWithFormat:@"%d", value]];
+            }
+                
+            [self updateTimeButtonTitle];
             break;
     }
 }
@@ -309,7 +372,7 @@
     double value = [object tag];
     
     if (_chronometer.state == kStopped) {
-        [_chronometer addTime:value];
+        [_chronometer setTime:value];
     }
     
 }
