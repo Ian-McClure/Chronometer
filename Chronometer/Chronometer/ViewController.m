@@ -7,11 +7,20 @@
 //
 
 /***********************************************
- Bug list!
+ Ideas?
+ 
+ If we pause the stopwatch with multiple laps, I think it should add the current split to the list of laps and remove it when the stopwatch starts again.
  
  ***********************************************
- Intentional bugs! er.. features!
+ Bug list!
+ 
+ The time button's title doesn't reset with the reset button.
+ 
+ ***********************************************
+ Intentional bugs, er.. features!
 
+  If there is a custom time, the preset keyboard does nothing.
+ 
  */
 
 #import "ViewController.h"
@@ -119,8 +128,6 @@
     double minutes = [[substrings objectAtIndex:1] doubleValue]*60;
     double seconds = [[substrings objectAtIndex:2] doubleValue];
     
-    NSLog(@"%f, %f, %f", hours, minutes, seconds);
-    
     if (hours != 0) {
         [_chronometer addTime:hours];
     }
@@ -134,7 +141,7 @@
     }
     
     _customTime = @"";
-    //[self updateTimeButtonTitle];
+    [_keyboard swapKeyboards];
 }
 
 - (void)callKeyboard {
@@ -143,14 +150,12 @@
 //        _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
 //    }
     
-    if (_keyboard.center.y > 568) {
+    if (_keyboard.isHidden) {
         [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             _keyboard.center = CGPointMake(_screenSize.width/2, _screenSize.height - 108);
         } completion:NO];
     } else {
-        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            _keyboard.center = CGPointMake(_screenSize.width/2, _screenSize.height + 108);
-        } completion:NO];
+        [_keyboard swapKeyboards];
     }
     
 }
@@ -479,6 +484,9 @@
 - (void)animateTimerViewDown {
     [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
         _timerView.center = CGPointMake(_screenSize.width/2, _screenSize.height/2);
+        _leftButton.center = CGPointMake(_leftButton.center.x, _screenSize.height * .75);
+        _rightButton.center = CGPointMake(_rightButton.center.x, _screenSize.height * .75);
+        _ChronometerLabel.center = CGPointMake(_ChronometerLabel.center.x, _screenSize.height/2);
     } completion:NO];
     atTop = NO;
 }
@@ -486,6 +494,9 @@
 - (void)animateTimerViewUp {
     [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         _timerView.center = CGPointMake(_screenSize.width/2, 0);
+        _leftButton.center = CGPointMake(_leftButton.center.x, _screenSize.height * .9);
+        _rightButton.center = CGPointMake(_rightButton.center.x, _screenSize.height * .9);
+        _ChronometerLabel.center = CGPointMake(_ChronometerLabel.center.x, _screenSize.height * .75);
     } completion:NO];
     atTop = YES;
 }
@@ -511,10 +522,21 @@
     
     CGPoint translation = [gesture translationInView:self.view];
     
+    NSLog(@"(%f, %f)", translation.x, translation.y);
+    
     if (atTop == YES) {
         [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + translation.y)];
     } else {
         [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
+    }
+    
+    if (_ChronometerLabel.center.y > _screenSize.height * .49 && _ChronometerLabel.center.y < _screenSize.height * .76) {
+        [_ChronometerLabel setCenter:CGPointMake(_ChronometerLabel.center.x, _ChronometerLabel.center.y - translation.y)];
+    }
+    
+    if (_leftButton.center.y > _screenSize.height * .74 && _leftButton.center.y < _screenSize.height * .91) {
+        [_leftButton setCenter:CGPointMake(_leftButton.center.x, _leftButton.center.y - translation.y)];
+        [_rightButton setCenter:CGPointMake(_rightButton.center.x, _rightButton.center.y - translation.y)];
     }
     
     if (gesture.state == UIGestureRecognizerStateEnded) {

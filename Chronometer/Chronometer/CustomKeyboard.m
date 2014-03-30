@@ -45,6 +45,22 @@
 
 - (void)swapKeyboards {
     
+    if (_numberPad.center.x > 320) {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _numberPad.center = CGPointMake([UIScreen mainScreen].bounds.size.width / 2, _numberPad.center.y);
+            _preset.center = CGPointMake(_preset.center.x * -1, _preset.center.y);
+        } completion:^(BOOL finished) {
+            _preset.center = CGPointMake(_preset.frame.size.width * 1.5, _preset.center.y);
+        }];
+    } else {
+        [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            _preset.center = CGPointMake([UIScreen mainScreen].bounds.size.width / 2, _preset.center.y);
+            _numberPad.center = CGPointMake(_numberPad.center.x * -1, _numberPad.center.y);
+        } completion:^(BOOL finished) {
+            _numberPad.center = CGPointMake(_numberPad.frame.size.width * 1.5, _numberPad.center.y);
+        }];
+    }
+    
 }
 
 - (void) BuildNumberPad {
