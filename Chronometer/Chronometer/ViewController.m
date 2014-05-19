@@ -27,12 +27,14 @@
 #import "Chronometer.h"
 #import "CustomKeyboard.h"
 
-#define AppWhiteColor [UIColor colorWithRed:.949 green:.945 blue:.968 alpha:1]
+#define AppWhiteColor [UIColor colorWithRed:.988 green:.984 blue:1.0 alpha:1.0]
 #define AppGreyColor [UIColor colorWithRed:.498 green:.494 blue:.517 alpha:1]
 
 @interface ViewController () {
     
     bool atTop;
+    
+    CGPoint _totalTranslation;
     
     CGSize _screenSize;
     
@@ -43,10 +45,10 @@
     NSString *_customTime;
     
     UIButton *_leftButton,
-             *_rightButton,
-             *_resetButton,
-             *_timeButton;
+             *_rightButton;
     
+    UIImageView *_intervalView;
+
     UILabel *_ChronometerLabel;
     
     UIView *_timerView,
@@ -68,7 +70,8 @@
 - (void)autocompletePanGestureMovement:(CGPoint)translation;
 - (void)callKeyboard;
 - (UIButton *)createButtonAtLocation:(CGPoint)location withTag:(uint)tag;
-- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture;
+- (void)handlePanGestureForTimerView:(UIPanGestureRecognizer *)gesture;
+- (void)handleTapGestureForIntervalCell:(UITapGestureRecognizer *)gesture;
 - (void)leftButtonTapped;
 - (void)numberPadButtonPressed:(id)sender;
 - (void)presetButtonPressed:(id)sender;
@@ -95,9 +98,6 @@
     
     _customTime = @"";
     
-    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    [self.view addGestureRecognizer:panRecognizer];
-    
     [self buildTimerView];
     [self buildSettingsView];
     
@@ -122,7 +122,15 @@
 
     [_chronometer reset];
     
-    NSArray *substrings = [_timeButton.titleLabel.text componentsSeparatedByString:@":"];
+    UILabel *timeLabel;
+    
+    for (UILabel *label in [_intervalView subviews]) {
+        if (label.tag == 4) {
+            timeLabel = label;
+        }
+    }
+    
+    NSArray *substrings = [timeLabel.text componentsSeparatedByString:@":"];
     
     double hours = [[substrings objectAtIndex:0] doubleValue]*3600;
     double minutes = [[substrings objectAtIndex:1] doubleValue]*60;
@@ -146,9 +154,11 @@
 
 - (void)callKeyboard {
     
-//    if (nil == _keyboard) {
-//        _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
-//    }
+    NSLog(@"CallKeyboard Called.");
+    
+    if (nil == _keyboard) {
+        _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height, _screenSize.width, 216) viewController:self];
+    }
     
     if (_keyboard.isHidden) {
         [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -184,7 +194,11 @@
         string = [NSString stringWithFormat:@"%@:%@:%@", [string substringWithRange:NSMakeRange(0, 2)], [string substringWithRange:NSMakeRange(2, 2)], [string substringWithRange:NSMakeRange(4, 2)]];
     }
     
-    [_timeButton setTitle:string forState:UIControlStateNormal];
+    for (UILabel *label in [_intervalView subviews]) {
+        if (label.tag == 4) {
+            [label setText:string];
+        }
+    }
 }
 
 #pragma mark - Builder methods
@@ -226,6 +240,24 @@
     }
 }
 
+- (void)buildIntervalView {
+    
+    _intervalView = [[UIImageView alloc] initWithFrame:CGRectMake(5, 300, 310, 44)];
+    [_intervalView setImage:[UIImage imageNamed:@"intervaltimecellbutton"]];
+    [_intervalView setUserInteractionEnabled:YES];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(22, 0, 244, 44)];
+    [label setFont:[UIFont fontWithName:@"EBGaramond12-Regular" size:24]];
+    [label setTextColor:AppGreyColor];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setText:@"hh:mm:ss"];
+    [label setTag:4];
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGestureForIntervalCell:)];
+    [_intervalView addGestureRecognizer:tapRecognizer];
+    [_intervalView addSubview:label];
+}
+
 - (void)buildSettingsView {
     
     _settingsView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
@@ -233,22 +265,9 @@
     
     _keyboard = [[CustomKeyboard alloc] initWithFrame:CGRectMake(0, _screenSize.height-216, _screenSize.width, 216) viewController:self];
     
-    _timeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_timeButton setFrame:CGRectMake(5, 300, 266, 44)];
-    [_timeButton setBackgroundColor: AppWhiteColor];
-    [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
-    [_timeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [_timeButton addTarget:self action:@selector(callKeyboard) forControlEvents:UIControlEventTouchUpInside];
+    [self buildIntervalView];
     
-    _resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_resetButton setFrame:CGRectMake(271, 300, 44, 44)];
-    [_resetButton setBackgroundColor:AppWhiteColor];
-    [_resetButton setTitle:@"X" forState:UIControlStateNormal];
-    [_resetButton addTarget:_chronometer action:@selector(reset) forControlEvents:UIControlEventTouchUpInside];
-    [_resetButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    
-    [_settingsView addSubview:_timeButton];
-    [_settingsView addSubview:_resetButton];
+    [_settingsView addSubview:_intervalView];
     [_settingsView addSubview:_keyboard];
 }
 
@@ -257,6 +276,8 @@
     _timerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _screenSize.width, _screenSize.height)];
     [_timerView setBackgroundColor: AppWhiteColor];
     
+    UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGestureForTimerView:)];
+    [_timerView addGestureRecognizer:panRecognizer];
 }
 
 #pragma mark - Button Methods
@@ -342,6 +363,13 @@
 //tag 10 == Accept; tag 11 == Delete;
 - (void)numberPadButtonPressed:(id)sender {
     
+    UILabel *timeLabel;
+    for (UILabel *label in [_intervalView subviews]) {
+        if (label.tag == 4) {
+            timeLabel = label;
+        }
+    }
+    
     UIButton *object = (UIButton *)sender;
     int value = (int)[object tag];
     
@@ -351,7 +379,7 @@
                 _customTime = [_customTime substringToIndex:[_customTime length]-1];
                 [self updateTimeButtonTitle];
             } else {
-                [_timeButton setTitle:@"hh:mm:ss" forState:UIControlStateNormal];
+                [timeLabel setText:@"hh:mm:ss"];
             }
             break;
         case 10:
@@ -476,7 +504,15 @@
 }
 
 - (void)updateTimeButton:(NSTimeInterval)interval {
-    [_timeButton setTitle:[NSString stringWithFormat:@"%f", interval] forState:UIControlStateNormal];
+    
+    UILabel *timeLabel;
+    for (UILabel *label in [_intervalView subviews]) {
+        if (label.tag == 4) {
+            timeLabel = label;
+        }
+    }
+    
+    [timeLabel setText:[NSString stringWithFormat:@"%f", interval]];
 }
 
 #pragma mark - Touch Methods
@@ -518,30 +554,58 @@
     }
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)gesture {
+- (void)handlePanGestureForTimerView:(UIPanGestureRecognizer *)gesture {
     
     CGPoint translation = [gesture translationInView:self.view];
+    _totalTranslation = CGPointMake(_totalTranslation.x + translation.x, _totalTranslation.y + translation.y);
     
-    NSLog(@"(%f, %f)", translation.x, translation.y);
     
     if (atTop == YES) {
-        [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + translation.y)];
+        [_timerView setCenter:CGPointMake(_timerView.center.x, 0 + _totalTranslation.y)];
     } else {
-        [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + translation.y)];
+        [_timerView setCenter:CGPointMake(_timerView.center.x, _screenSize.height/2 + _totalTranslation.y)];
     }
     
-    if (_ChronometerLabel.center.y > _screenSize.height * .49 && _ChronometerLabel.center.y < _screenSize.height * .76) {
-        [_ChronometerLabel setCenter:CGPointMake(_ChronometerLabel.center.x, _ChronometerLabel.center.y - translation.y)];
-    }
-    
-    if (_leftButton.center.y > _screenSize.height * .74 && _leftButton.center.y < _screenSize.height * .91) {
-        [_leftButton setCenter:CGPointMake(_leftButton.center.x, _leftButton.center.y - translation.y)];
-        [_rightButton setCenter:CGPointMake(_rightButton.center.x, _rightButton.center.y - translation.y)];
+    if (translation.y <= 0) {
+        if (_ChronometerLabel.center.y < _screenSize.height * 0.75) {
+            [_ChronometerLabel setCenter:CGPointMake(_ChronometerLabel.center.x, _ChronometerLabel.center.y - translation.y)];
+        }
+        if (_leftButton.center.y < _screenSize.height * 0.9) {
+            [_leftButton setCenter:CGPointMake(_leftButton.center.x, _leftButton.center.y - translation.y)];
+            [_rightButton setCenter:CGPointMake(_rightButton.center.x, _rightButton.center.y - translation.y)];
+        }
+    } else {
+        if (_ChronometerLabel.center.y > _screenSize.height * 0.5) {
+            [_ChronometerLabel setCenter:CGPointMake(_ChronometerLabel.center.x, _ChronometerLabel.center.y - translation.y)];
+        }
+        if (_leftButton.center.y > _screenSize.height * 0.75) {
+            [_leftButton setCenter:CGPointMake(_leftButton.center.x, _leftButton.center.y - translation.y)];
+            [_rightButton setCenter:CGPointMake(_rightButton.center.x, _rightButton.center.y - translation.y)];
+        }
     }
     
     if (gesture.state == UIGestureRecognizerStateEnded) {
         [self autocompletePanGestureMovement:translation];
+        _totalTranslation = CGPointZero;
     }
+    [gesture setTranslation:CGPointZero inView:self.view];
+}
+
+- (void)handleTapGestureForIntervalCell:(UITapGestureRecognizer *)gesture {
+    
+    CGPoint touchLocation = [gesture locationInView:_intervalView];
+    
+    if (touchLocation.x < 266) {
+        [self callKeyboard];
+    } else {
+
+        [_keyboard callPresetKeyboard];
+        _customTime = @"";
+        UILabel *label = [_intervalView.subviews objectAtIndex:0];
+        [label setText:@"hh:mm:ss"];
+
+    }
+    
 }
 
 #pragma mark - Tumbler Delegate Methods

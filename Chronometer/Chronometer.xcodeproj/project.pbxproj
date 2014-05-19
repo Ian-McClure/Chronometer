@@ -24,7 +24,9 @@
 		ED37AA5B18AF0CF600A5EC3C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED37AA3D18AF0CF600A5EC3C /* UIKit.framework */; };
 		ED37AA6318AF0CF600A5EC3C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED37AA6118AF0CF600A5EC3C /* InfoPlist.strings */; };
 		ED37AA6518AF0CF600A5EC3C /* ChronometerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ED37AA6418AF0CF600A5EC3C /* ChronometerTests.m */; };
+		ED68C1AF192A3561002A32D4 /* IntervalTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ED68C1AE192A3561002A32D4 /* IntervalTableViewCell.m */; };
 		ED73BF7A18B6BB5100D25EDC /* ImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = ED73BF7918B6BB5100D25EDC /* ImageCache.m */; };
+		ED7694BB19019609005780B0 /* EBGaramond-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = ED7694BA19018EE1005780B0 /* EBGaramond-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,8 +65,11 @@
 		ED37AA6018AF0CF600A5EC3C /* ChronometerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ChronometerTests-Info.plist"; sourceTree = "<group>"; };
 		ED37AA6218AF0CF600A5EC3C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		ED37AA6418AF0CF600A5EC3C /* ChronometerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChronometerTests.m; sourceTree = "<group>"; };
+		ED68C1AD192A3561002A32D4 /* IntervalTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntervalTableViewCell.h; sourceTree = "<group>"; };
+		ED68C1AE192A3561002A32D4 /* IntervalTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntervalTableViewCell.m; sourceTree = "<group>"; };
 		ED73BF7818B6BB5100D25EDC /* ImageCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCache.h; sourceTree = "<group>"; };
 		ED73BF7918B6BB5100D25EDC /* ImageCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCache.m; sourceTree = "<group>"; };
+		ED7694BA19018EE1005780B0 /* EBGaramond-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "EBGaramond-Regular.otf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +140,8 @@
 				342E842D18AF0F15001F7D5F /* Chronometer.m */,
 				ED73BF7818B6BB5100D25EDC /* ImageCache.h */,
 				ED73BF7918B6BB5100D25EDC /* ImageCache.m */,
+				ED68C1AD192A3561002A32D4 /* IntervalTableViewCell.h */,
+				ED68C1AE192A3561002A32D4 /* IntervalTableViewCell.m */,
 				342E842918AF0EE6001F7D5F /* Tumbler.h */,
 				342E842A18AF0EE6001F7D5F /* Tumbler.m */,
 				ED37AA5118AF0CF600A5EC3C /* Images.xcassets */,
@@ -146,6 +153,7 @@
 		ED37AA4018AF0CF600A5EC3C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				ED7694BA19018EE1005780B0 /* EBGaramond-Regular.otf */,
 				ED37AA4118AF0CF600A5EC3C /* Chronometer-Info.plist */,
 				ED37AA4218AF0CF600A5EC3C /* InfoPlist.strings */,
 				ED37AA4518AF0CF600A5EC3C /* main.m */,
@@ -247,6 +255,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED7694BB19019609005780B0 /* EBGaramond-Regular.otf in Resources */,
 				ED37AA5218AF0CF600A5EC3C /* Images.xcassets in Resources */,
 				ED37AA4418AF0CF600A5EC3C /* InfoPlist.strings in Resources */,
 				ED37AA4D18AF0CF600A5EC3C /* Main.storyboard in Resources */,
@@ -270,6 +279,7 @@
 			files = (
 				ED37AA5018AF0CF600A5EC3C /* ViewController.m in Sources */,
 				ED37AA4A18AF0CF600A5EC3C /* AppDelegate.m in Sources */,
+				ED68C1AF192A3561002A32D4 /* IntervalTableViewCell.m in Sources */,
 				34841A7118B8447300D7A46F /* CustomKeyboard.m in Sources */,
 				342E842E18AF0F15001F7D5F /* Chronometer.m in Sources */,
 				ED37AA4618AF0CF600A5EC3C /* main.m in Sources */,

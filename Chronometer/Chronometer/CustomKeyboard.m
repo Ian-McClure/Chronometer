@@ -63,10 +63,22 @@
     
 }
 
+- (void)callPresetKeyboard {
+    if (_preset.center.x > 320) {
+        [self swapKeyboards];
+    }
+}
+
+- (void)callNumberPad {
+    if (_numberPad.center.x > 320) {
+        [self swapKeyboards];
+    }
+}
+
 - (void) BuildNumberPad {
     int values[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 11};
     int xPos[3] = {8, 110, 212};
-    int yPos[4] = {21, 64, 107, 150};
+    int yPos[4] = {19, 63, 108, 152};
     
     for (int i = 0; i < 12; i++) {
         CGRect frame = CGRectMake(xPos[i%3], yPos[(i/3)%4], 100, 41);
