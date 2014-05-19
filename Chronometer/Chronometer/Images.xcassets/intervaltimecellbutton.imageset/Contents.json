@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "idiom" : "iphone",
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
@@ -12,12 +12,12 @@
           "width" : 1
         },
         "capInsets" : {
-          "right" : 47,
-          "left" : 46
+          "right" : 79,
+          "left" : 52
         }
       },
-      "idiom" : "iphone",
-      "filename" : "Interval Cell Background.png",
+      "idiom" : "universal",
+      "filename" : "Interval Cell Button.png",
       "scale" : "2x"
     }
   ],
